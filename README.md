@@ -19,6 +19,7 @@ B站直播相关API的Go语言实现
 
 ```shell 
 go get github.com/spellingDragon/bili-live-api
+
 ```
 
 ### 使用
@@ -33,6 +34,7 @@ import (
 	"github.com/spellingDragon/bili-live-api/dto"
 	"github.com/spellingDragon/bili-live-api/log"
 	"github.com/spellingDragon/bili-live-api/websocket"
+
 )
 
 func main() {
