@@ -12,10 +12,18 @@ const (
 	VcAPIURL       = "https://api.vc.bilibili.com"
 	UserAgentKey   = "User-Agent"
 	UserAgentValue = "curl/7.68.0"
+	AcceptKey      = "Accept"
+	AcceptValue    = "application/json, text/plain, */*"
+	CookieKey      = "Cookie"
+	CookieValue    = "say=hi"
 )
 
 var (
-	liveAPIClient = resty.New().SetHeader(UserAgentKey, UserAgentValue).SetBaseURL(LiveAPIURL)
-	apiClient     = resty.New().SetHeader(UserAgentKey, UserAgentValue).SetBaseURL(APIURL)
-	vcApiClient   = resty.New().SetHeader(UserAgentKey, UserAgentValue).SetBaseURL(VcAPIURL)
+	liveAPIClient = newClient().SetBaseURL(LiveAPIURL)
+	apiClient     = newClient().SetBaseURL(APIURL)
+	vcApiClient   = newClient().SetBaseURL(VcAPIURL)
 )
+
+func newClient() *resty.Client {
+	return resty.New().SetHeader(UserAgentKey, UserAgentValue).SetHeader(CookieKey, CookieValue)
+}
