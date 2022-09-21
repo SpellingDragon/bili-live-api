@@ -11,7 +11,7 @@ const (
 	APIURL         = "https://api.bilibili.com"
 	VcAPIURL       = "https://api.vc.bilibili.com"
 	UserAgentKey   = "User-Agent"
-	UserAgentValue = "curl 7.68.0"
+	UserAgentValue = "curl/7.68.0"
 )
 
 var (
