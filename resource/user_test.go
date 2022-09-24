@@ -17,4 +17,10 @@ func TestUserInfo(t *testing.T) {
 		t.Errorf("获取用户信息失败, %+v", userInfo)
 	}
 
+	video, err := VideoInfo("BV1tW4y1t7D6")
+	if err != nil {
+		t.Error(err)
+	}
+	videoJson, _ := json.Marshal(video)
+	println(string(videoJson))
 }

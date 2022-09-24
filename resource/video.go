@@ -141,7 +141,7 @@ func VideoInfo(bvId string) (*VideoInfoResponse, error) {
 	_, err := apiClient.R().
 		SetQueryParam("bvid", bvId).
 		SetResult(videoInfo).
-		Get("/x/web-interface")
+		Get("/x/web-interface/view")
 	if err != nil {
 		return nil, err
 	}
