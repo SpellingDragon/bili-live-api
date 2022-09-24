@@ -137,13 +137,13 @@ type Stat struct {
 }
 
 func VideoInfo(bvId string) (*VideoInfoResponse, error) {
-	vedioInfo := &VideoInfoResponse{}
+	videoInfo := &VideoInfoResponse{}
 	_, err := apiClient.R().
 		SetQueryParam("bvid", bvId).
-		SetResult(vedioInfo).
+		SetResult(videoInfo).
 		Get("/x/web-interface")
 	if err != nil {
 		return nil, err
 	}
-	return vedioInfo, nil
+	return videoInfo, nil
 }
