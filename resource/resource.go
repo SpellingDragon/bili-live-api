@@ -19,9 +19,14 @@ const (
 )
 
 var (
+	// 直播
 	liveAPIClient = newClient().SetBaseURL(LiveAPIURL)
-	apiClient     = newClient().SetBaseURL(APIURL)
-	vcApiClient   = newClient().SetBaseURL(VcAPIURL)
+	// 用户信息
+	apiClient = newClient().SetBaseURL(APIURL)
+	// 动态
+	vcApiClient = newClient().SetBaseURL(VcAPIURL)
+	// 投稿
+	videoApiClient = newClient().SetBaseURL(APIURL)
 )
 
 func newClient() *resty.Client {

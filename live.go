@@ -125,7 +125,7 @@ func (l *Live) RefreshRoom() error {
 	return nil
 }
 
-func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
+func (l *Live) setLiverProfile(liverInfo *resource.VideoInfoResponse) {
 	l.LiverUname = liverInfo.Data.Name
 	l.LastTitle = liverInfo.Data.LiveRoom.Title
 	l.Face = liverInfo.Data.Face
