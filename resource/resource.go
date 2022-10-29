@@ -11,11 +11,22 @@ const (
 	APIURL         = "https://api.bilibili.com"
 	VcAPIURL       = "https://api.vc.bilibili.com"
 	UserAgentKey   = "User-Agent"
-	UserAgentValue = "curl 7.68.0"
+	UserAgentValue = "mengzhongshenjun/0.0.1-beta"
+	AcceptKey      = "Accept"
+	AcceptValue    = "application/json, text/plain, */*"
+	CookieKey      = "Cookie"
+	CookieValue    = "say=hi"
 )
 
 var (
-	liveAPIClient = resty.New().SetHeader(UserAgentKey, UserAgentValue).SetBaseURL(LiveAPIURL)
-	apiClient     = resty.New().SetHeader(UserAgentKey, UserAgentValue).SetBaseURL(APIURL)
-	vcApiClient   = resty.New().SetHeader(UserAgentKey, UserAgentValue).SetBaseURL(VcAPIURL)
+	// 通用
+	liveAPIClient = newClient().SetDebug(true).SetBaseURL(LiveAPIURL)
+	// 用户信息
+	apiClient = newClient().SetBaseURL(APIURL)
+	// 动态
+	vcApiClient = newClient().SetBaseURL(VcAPIURL)
 )
+
+func newClient() *resty.Client {
+	return resty.New().SetHeader(UserAgentKey, UserAgentValue).SetHeader(CookieKey, CookieValue)
+}
