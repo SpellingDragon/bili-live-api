@@ -143,6 +143,7 @@ func VideoInfo(bvId string) (*VideoInfoResponse, error) {
 		SetResult(videoInfo).
 		Get("/x/web-interface/view")
 	if err != nil {
+		println(err)
 		return nil, err
 	}
 	return videoInfo, nil

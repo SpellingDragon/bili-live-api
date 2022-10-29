@@ -11,7 +11,7 @@ const (
 	APIURL         = "https://api.bilibili.com"
 	VcAPIURL       = "https://api.vc.bilibili.com"
 	UserAgentKey   = "User-Agent"
-	UserAgentValue = "curl/7.68.0"
+	UserAgentValue = "mengzhongshenjun/0.0.1-beta"
 	AcceptKey      = "Accept"
 	AcceptValue    = "application/json, text/plain, */*"
 	CookieKey      = "Cookie"
@@ -19,14 +19,12 @@ const (
 )
 
 var (
-	// 直播
-	liveAPIClient = newClient().SetBaseURL(LiveAPIURL)
+	// 通用
+	liveAPIClient = newClient().SetDebug(true).SetBaseURL(LiveAPIURL)
 	// 用户信息
 	apiClient = newClient().SetBaseURL(APIURL)
 	// 动态
 	vcApiClient = newClient().SetBaseURL(VcAPIURL)
-	// 投稿
-	videoApiClient = newClient().SetBaseURL(APIURL)
 )
 
 func newClient() *resty.Client {
