@@ -115,18 +115,27 @@ func (l *Live) RefreshRoom() error {
 	if err != nil {
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
-	liverInfo, _ := resource.UserInfo(roomInfo.Data.UID)
+	liverInfo, err := resource.UserInfo(roomInfo.Data.UID)
 	if err != nil {
 		return fmt.Errorf("刷新主播信息失败：%v", err)
 	}
-	liverInfoJson, _ := json.Marshal(liverInfo)
+	liverInfoJson, err := json.Marshal(liverInfo)
+	if err != nil {
+		return fmt.Errorf("刷新主播信息失败：%v", err)
+	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	l.setLiverProfile(liverInfo)
 	return nil
 }
 
 func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
-	l.LiverUname = liverInfo.Data.Name
-	l.LastTitle = liverInfo.Data.LiveRoom.Title
-	l.Face = liverInfo.Data.Face
+	if liverInfo.Data.Name != "" {
+		l.LiverUname = liverInfo.Data.Name
+	}
+	if liverInfo.Data.LiveRoom.Title != "" {
+		l.LastTitle = liverInfo.Data.LiveRoom.Title
+	}
+	if liverInfo.Data.Face != "" {
+		l.Face = liverInfo.Data.Face
+	}
 }
