@@ -15,7 +15,7 @@ const (
 	AcceptKey      = "Accept"
 	AcceptValue    = "application/json, text/plain, */*"
 	CookieKey      = "Cookie"
-	CookieValue    = "say=hi"
+	CookieValue    = "buvid3=hi"
 )
 
 var (
