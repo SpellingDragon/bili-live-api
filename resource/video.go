@@ -1,5 +1,7 @@
 package resource
 
+import "strconv"
+
 // Pages
 type Pages struct {
 	Weblink   string    `json:"weblink"`
@@ -49,12 +51,12 @@ type DataDimension struct {
 type VideoInfoResponse struct {
 	Message string `json:"message"`
 	Ttl     int    `json:"ttl"`
-	Data    Data   `json:"data"`
+	Data    Video  `json:"data"`
 	Code    int    `json:"code"`
 }
 
-// Data
-type Data struct {
+// Video
+type Video struct {
 	Bvid               string        `json:"bvid"`
 	Tname              string        `json:"tname"`
 	Cid                int           `json:"cid"`
@@ -147,4 +149,64 @@ func VideoInfo(bvId string) (*VideoInfoResponse, error) {
 		return nil, err
 	}
 	return videoInfo, nil
+}
+
+// VideoTagResponse
+type VideoTagResponse struct {
+	Code    int        `json:"code,omitempty"`
+	Message string     `json:"message,omitempty"`
+	Ttl     int        `json:"ttl,omitempty"`
+	Data    []VideoTag `json:"data,omitempty"`
+}
+
+// VideoTag
+type VideoTag struct {
+	IsActivity      bool   `json:"is_activity"`
+	Alpha           int    `json:"alpha"`
+	TagId           int    `json:"tag_id"`
+	Cover           string `json:"cover"`
+	Liked           int    `json:"liked"`
+	Ctime           int    `json:"ctime"`
+	IsAtten         int    `json:"is_atten"`
+	Likes           int    `json:"likes"`
+	JumpUrl         string `json:"jump_url"`
+	ShortContent    string `json:"short_content"`
+	Attribute       int    `json:"attribute"`
+	Color           string `json:"color"`
+	SubscribedCount int    `json:"subscribed_count"`
+	ArchiveCount    string `json:"archive_count"`
+	State           int    `json:"state"`
+	Hates           int    `json:"hates"`
+	ExtraAttr       int    `json:"extra_attr"`
+	MusicId         string `json:"music_id"`
+	Content         string `json:"content"`
+	Count           Count  `json:"count"`
+	FeaturedCount   int    `json:"featured_count"`
+	TagName         string `json:"tag_name"`
+	IsSeason        bool   `json:"is_season"`
+	HeadCover       string `json:"head_cover"`
+	Hated           int    `json:"hated"`
+	TagType         string `json:"tag_type"`
+	Type            int    `json:"type"`
+}
+
+// Count
+type Count struct {
+	View  int `json:"view"`
+	Use   int `json:"use"`
+	Atten int `json:"atten"`
+}
+
+func VideoTags(video Video) (*VideoTagResponse, error) {
+	videoTags := &VideoTagResponse{}
+	_, err := apiClient.R().
+		SetQueryParam("aid", strconv.Itoa(video.Aid)).
+		SetQueryParam("cid", strconv.Itoa(video.Cid)).
+		SetResult(videoTags).
+		Get("/x/web-interface/view/detail/tag")
+	if err != nil {
+		println(err)
+		return nil, err
+	}
+	return videoTags, nil
 }

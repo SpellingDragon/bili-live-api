@@ -1,8 +1,9 @@
 package resource
 
 import (
-	"encoding/json"
 	"testing"
+
+	jsoniter "github.com/json-iterator/go"
 )
 
 func TestUserInfo(t *testing.T) {
@@ -17,8 +18,11 @@ func TestUserInfo(t *testing.T) {
 	// 	t.Errorf("获取用户信息失败, %+v", userInfo)
 	// }
 
-	video, _ := VideoInfo("BV1cB4y1W78J")
-
-	videoJson, _ := json.Marshal(video)
+	video, _ := VideoInfo("BV18d4y1n73r")
+	videoJson, _ := jsoniter.Marshal(video)
 	println(string(videoJson))
+	tags, _ := VideoTags(video.Data)
+	println(tags.Data[1].TagName)
+	tagJson, _ := jsoniter.MarshalToString(tags)
+	println(tagJson)
 }
