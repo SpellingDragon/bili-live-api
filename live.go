@@ -16,11 +16,12 @@ import (
 
 // Live 使用 NewLive() 来初始化
 type Live struct {
-	Client     *websocket.Client
-	RoomID     int
-	LiverUname string
-	LastTitle  string
-	Face       string
+	Client      *websocket.Client
+	RoomID      int
+	LiverUname  string
+	LastTitle   string
+	Face        string
+	FollowerNum uint
 }
 
 // NewLive 构造函数
@@ -125,6 +126,11 @@ func (l *Live) RefreshRoom() error {
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	l.setLiverProfile(liverInfo)
+	followerInfo, err := resource.FollowerInfo(roomInfo.Data.UID)
+	if err != nil {
+		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
+	}
+	l.setFollowerNum(followerInfo)
 	return nil
 }
 
@@ -137,5 +143,11 @@ func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
 	}
 	if liverInfo.Data.Face != "" {
 		l.Face = liverInfo.Data.Face
+	}
+}
+
+func (l *Live) setFollowerNum(liverInfo *resource.FollowerInfoResp) {
+	if liverInfo.Data.Follower != 0 {
+		l.FollowerNum = liverInfo.Data.Follower
 	}
 }

@@ -1,22 +1,23 @@
 package resource
 
 import (
+	"encoding/json"
 	"testing"
 
 	jsoniter "github.com/json-iterator/go"
 )
 
 func TestUserInfo(t *testing.T) {
-	// userInfo, err := UserInfo(2075179777)
-	// userJson, _ := json.Marshal(userInfo)
-	// println(string(userJson))
-	//
-	// if err != nil {
-	// 	t.Error(err)
-	// }
-	// if userInfo.Message == "" {
-	// 	t.Errorf("获取用户信息失败, %+v", userInfo)
-	// }
+	userInfo, err := UserInfo(2258389)
+	userJson, _ := json.Marshal(userInfo)
+	println(string(userJson))
+
+	if err != nil {
+		t.Error(err)
+	}
+	if userInfo.Message == "" {
+		t.Errorf("获取用户信息失败, %+v", userInfo)
+	}
 
 	video, _ := VideoInfo("BV18d4y1n73r")
 	videoJson, _ := jsoniter.Marshal(video)

@@ -129,3 +129,26 @@ func UserInfo(uid int) (*UserInfoResp, error) {
 	}
 	return userInfo, nil
 }
+
+type FollowerInfoResp struct {
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+	TTL     int    `json:"ttl"`
+	Data    struct {
+		Mid       int  `json:"mid"`
+		Following uint `json:"following"`
+		Follower  uint `json:"follower"`
+	}
+}
+
+func FollowerInfo(uid int) (*FollowerInfoResp, error) {
+	userInfo := &FollowerInfoResp{}
+	_, err := apiClient.R().
+		SetQueryParam("mid", strconv.Itoa(uid)).
+		SetResult(userInfo).
+		Get("/x/relation/stat")
+	if err != nil {
+		return nil, err
+	}
+	return userInfo, nil
+}
