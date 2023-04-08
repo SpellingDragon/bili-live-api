@@ -144,7 +144,7 @@ type FollowerInfoResp struct {
 func FollowerInfo(uid int) (*FollowerInfoResp, error) {
 	userInfo := &FollowerInfoResp{}
 	_, err := apiClient.R().
-		SetQueryParam("mid", strconv.Itoa(uid)).
+		SetQueryParam("vmid", strconv.Itoa(uid)).
 		SetResult(userInfo).
 		Get("/x/relation/stat")
 	if err != nil {
