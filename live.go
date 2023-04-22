@@ -114,14 +114,17 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 func (l *Live) RefreshRoom() error {
 	roomInfo, err := resource.GetRoomInfo(l.RoomID)
 	if err != nil {
+		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
 	liverInfo, err := resource.UserInfo(roomInfo.Data.UID)
 	if err != nil {
+		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
 	}
 	liverInfoJson, err := json.Marshal(liverInfo)
 	if err != nil {
+		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
@@ -135,6 +138,10 @@ func (l *Live) RefreshRoom() error {
 }
 
 func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
+	if liverInfo == nil {
+		log.Warnf("没有正确获取到直播间的主播信息 state:%+v", l)
+		return
+	}
 	if liverInfo.Data.Name != "" {
 		l.LiverUname = liverInfo.Data.Name
 	}

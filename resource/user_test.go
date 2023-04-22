@@ -8,12 +8,12 @@ import (
 )
 
 func TestUserInfo(t *testing.T) {
-	// userInfo, err := UserInfo(2258389)
-	// userJson, _ := json.Marshal(userInfo)
-	// println(string(userJson))
-	// if err != nil {
-	// 	t.Error(err)
-	// }
+	userInfo, err := UserInfo(2258389)
+	userJson, _ := json.Marshal(userInfo)
+	println(string(userJson))
+	if err != nil {
+		t.Error(err)
+	}
 	followerInfo, err := FollowerInfo(2258389)
 	followerJson, _ := json.Marshal(followerInfo)
 	println(string(followerJson))
