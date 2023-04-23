@@ -8,13 +8,19 @@ import (
 )
 
 func TestUserInfo(t *testing.T) {
-	userInfo, err := UserInfo(2258389)
+	roomRsp, err := GetRoomInfo(27215740)
+	roomJson, _ := json.Marshal(roomRsp)
+	println(string(roomJson))
+	if err != nil {
+		t.Error(err)
+	}
+	userInfo, err := UserInfo(3493141086734404)
 	userJson, _ := json.Marshal(userInfo)
 	println(string(userJson))
 	if err != nil {
 		t.Error(err)
 	}
-	followerInfo, err := FollowerInfo(2258389)
+	followerInfo, err := FollowerInfo(3493141086734404)
 	followerJson, _ := json.Marshal(followerInfo)
 	println(string(followerJson))
 	if err != nil {

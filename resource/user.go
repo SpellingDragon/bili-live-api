@@ -123,7 +123,7 @@ func UserInfo(uid int) (*UserInfoResp, error) {
 	_, err := apiClient.R().
 		SetQueryParam("mid", strconv.Itoa(uid)).
 		SetResult(userInfo).
-		Get("/x/space/acc/info")
+		Get("/x/space/wbi/acc/info")
 	if err != nil {
 		return nil, err
 	}

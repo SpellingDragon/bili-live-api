@@ -22,9 +22,9 @@ var (
 	// 通用
 	liveAPIClient = newClient().SetDebug(true).SetBaseURL(LiveAPIURL)
 	// 用户信息
-	apiClient = newClient().SetBaseURL(APIURL)
+	apiClient = newClient().SetDebug(true).SetBaseURL(APIURL)
 	// 动态
-	vcApiClient = newClient().SetBaseURL(VcAPIURL)
+	vcApiClient = newClient().SetDebug(true).SetBaseURL(VcAPIURL)
 )
 
 func newClient() *resty.Client {
