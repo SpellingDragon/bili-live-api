@@ -89,12 +89,14 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
-	liverInfo, _ := resource.UserInfo(roomInfo.Data.UID)
+	liverInfo, err := resource.UserInfo(roomInfo.Data.UID)
 	liverInfoJson, _ := json.Marshal(liverInfo)
 	log.Infof("主播信息：%s", string(liverInfoJson))
+	if err != nil {
+		log.Errorf("发送进入房间请求失败：%v", err)
+		return
+	}
 	l.setLiverProfile(liverInfo)
-	// 忽略错误
-	var err error
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
 		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
 		ProtoVer: 3,                    // 填3

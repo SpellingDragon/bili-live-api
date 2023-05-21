@@ -1,8 +1,8 @@
 package resource
 
 import (
+	"errors"
 	"strconv"
-	"time"
 )
 
 type UserInfoResp struct {
@@ -128,8 +128,8 @@ func UserInfo(uid int) (*UserInfoResp, error) {
 	if err != nil {
 		return nil, err
 	}
-	for retry := 0; userInfo.Code == -403 && retry < 10; retry++ {
-		time.Sleep(3 * time.Second)
+	if userInfo.Code == -403 {
+		return nil, errors.New("命中反爬策略")
 	}
 	return userInfo, nil
 }
