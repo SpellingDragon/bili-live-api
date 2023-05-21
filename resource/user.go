@@ -2,6 +2,9 @@ package resource
 
 import (
 	"strconv"
+	"time"
+
+	"github.com/spellingDragon/bili-live-api/log"
 )
 
 type UserInfoResp struct {
@@ -126,6 +129,17 @@ func UserInfo(uid int) (*UserInfoResp, error) {
 		Get("/x/space/wbi/acc/info")
 	if err != nil {
 		return nil, err
+	}
+	for userInfo.Code == -403 {
+		time.Sleep(5 * time.Second)
+		log.Warnf("获取主播资料失败重试:%d", uid)
+		_, err = apiClient.R().
+			SetQueryParam("mid", strconv.Itoa(uid)).
+			SetResult(userInfo).
+			Get("/x/space/wbi/acc/info")
+		if err != nil {
+			return nil, err
+		}
 	}
 	return userInfo, nil
 }
