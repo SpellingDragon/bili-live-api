@@ -120,15 +120,20 @@ type UserInfoResp struct {
 }
 
 func UserInfo(uid int) (*UserInfoResp, error) {
+	wts, wrid := GetWRID(map[string]interface{}{
+		"mid": uid,
+	})
 	userInfo := &UserInfoResp{}
 	_, err := apiClient.R().
 		SetQueryParam("mid", strconv.Itoa(uid)).
+		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
+		SetQueryParam("w_rid", wrid).
 		SetResult(userInfo).
 		Get("/x/space/wbi/acc/info")
 	if err != nil {
 		return nil, err
 	}
-	if userInfo.Code == -403 {
+	if userInfo.Code < 0 {
 		return nil, errors.New("命中反爬策略")
 	}
 	return userInfo, nil
