@@ -14,7 +14,7 @@ func TestUserInfo(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	userInfo, err := UserInfo(3493141086734404)
+	userInfo, err := UserInfo(602310692)
 	userJson, _ := json.Marshal(userInfo)
 	println(string(userJson))
 	if err != nil {
