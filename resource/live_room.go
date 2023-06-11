@@ -61,3 +61,49 @@ func RealRoomID(shortID int) (int, error) {
 	}
 	return info.Data.RoomID, nil
 }
+
+// PlayURLRsp
+type PlayURLRsp struct {
+	Code    int         ` yaml:"code" json:"code,omitempty"`
+	Message string      `yaml:"message" json:"message,omitempty"`
+	Ttl     int         `yaml:"ttl" json:"ttl,omitempty"`
+	Data    PlayURLData `yaml:"data" json:"data"`
+}
+
+// PlayURLData
+type PlayURLData struct {
+	CurrentQuality     int                  `yaml:"current_quality" json:"current_quality,omitempty"`
+	AcceptQuality      []string             `yaml:"accept_quality" json:"accept_quality,omitempty"`
+	CurrentQn          int                  `yaml:"current_qn" json:"current_qn,omitempty"`
+	QualityDescription []QualityDescription `yaml:"quality_description" json:"quality_description,omitempty"`
+	Durl               []Durl               `yaml:"durl" json:"durl,omitempty"`
+}
+
+// Durl
+type Durl struct {
+	Order      int    `yaml:"order" json:"order,omitempty"`
+	StreamType int    `yaml:"stream_type" json:"stream_type,omitempty"`
+	P2pType    int    `yaml:"p2p_type" json:"p_2_p_type,omitempty"`
+	Url        string `yaml:"url" json:"url,omitempty"`
+	Length     int    `yaml:"length" json:"length,omitempty"`
+}
+
+// QualityDescription
+type QualityDescription struct {
+	Qn   int    `yaml:"qn" json:"qn,omitempty"`
+	Desc string `yaml:"desc" json:"desc,omitempty"`
+}
+
+// GetPlayURL 获取直播推流URL
+func GetPlayURL(shortID int) (*PlayURLRsp, error) {
+	result := &PlayURLRsp{}
+	_, err := liveAPIClient.R().
+		EnableTrace().
+		SetQueryParam("id", strconv.Itoa(shortID)).
+		SetResult(result).
+		Get("/room/v1/Room/playUrl")
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
