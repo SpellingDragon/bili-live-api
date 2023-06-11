@@ -38,3 +38,12 @@ func TestUserInfo(t *testing.T) {
 	tagJson, _ := jsoniter.MarshalToString(tags)
 	println(tagJson)
 }
+
+func TestRoom(t *testing.T) {
+	roomRsp, err := GetPlayURL(21013446, 150)
+	roomJson, _ := json.Marshal(roomRsp)
+	println(string(roomJson))
+	if err != nil {
+		t.Error(err)
+	}
+}

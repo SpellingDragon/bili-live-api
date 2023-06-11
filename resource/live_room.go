@@ -95,11 +95,14 @@ type QualityDescription struct {
 }
 
 // GetPlayURL 获取直播推流URL
-func GetPlayURL(shortID int) (*PlayURLRsp, error) {
+func GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
 	result := &PlayURLRsp{}
 	_, err := liveAPIClient.R().
 		EnableTrace().
-		SetQueryParam("id", strconv.Itoa(shortID)).
+		SetQueryParam("cid", strconv.Itoa(shortID)).
+		SetQueryParam("otype", "json").
+		SetQueryParam("platform", "web").
+		SetQueryParam("qn", strconv.Itoa(qn)).
 		SetResult(result).
 		Get("/room/v1/Room/playUrl")
 	if err != nil {

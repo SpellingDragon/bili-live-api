@@ -139,6 +139,15 @@ func (l *Live) RefreshRoom() error {
 	return nil
 }
 
+func (l *Live) GetStreamURL(qn int) string {
+	playURL, err := resource.GetPlayURL(l.RoomID, qn)
+	if err != nil {
+		log.Errorf("获取直播推流链接失败：%v", err)
+		return ""
+	}
+	return strings.ReplaceAll(playURL.Data.Durl[0].Url, "\\u0026", "&")
+}
+
 func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
 	if liverInfo == nil {
 		log.Warnf("没有正确获取到直播间的主播信息 state:%+v", l)
