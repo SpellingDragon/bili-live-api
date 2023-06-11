@@ -18,9 +18,9 @@ import (
 type Live struct {
 	Client       *websocket.Client
 	RoomID       int
-	RoomInfo     resource.RoomInfo
-	UserInfo     resource.UserInfo
-	FollowerInfo resource.FollowerInfo
+	RoomInfo     *resource.RoomInfo
+	UserInfo     *resource.UserInfo
+	FollowerInfo *resource.FollowerInfo
 }
 
 // NewLive 构造函数
@@ -95,7 +95,7 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 		log.Errorf("发送进入房间请求失败：%v", err)
 		return
 	}
-	l.UserInfo = liverInfo.Data
+	l.UserInfo = &liverInfo.Data
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
 		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
 		ProtoVer: 3,                    // 填3
@@ -118,7 +118,7 @@ func (l *Live) RefreshRoom() error {
 		log.Errorf("刷新直播信息失败：%v", err)
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
-	l.RoomInfo = roomInfo.Data
+	l.RoomInfo = &roomInfo.Data
 	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
 	if err != nil {
 		log.Errorf("刷新主播信息失败：%v", err)
@@ -130,12 +130,12 @@ func (l *Live) RefreshRoom() error {
 		return fmt.Errorf("刷新主播信息失败：%v", err)
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
-	l.UserInfo = liverInfo.Data
+	l.UserInfo = &liverInfo.Data
 	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.UID)
 	if err != nil {
 		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
 	}
-	l.FollowerInfo = followerInfo.Data
+	l.FollowerInfo = &followerInfo.Data
 	return nil
 }
 
