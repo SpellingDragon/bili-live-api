@@ -6,30 +6,32 @@ import (
 
 // RoomInfoResp 直播房间信息
 type RoomInfoResp struct {
-	Code    int    `json:"code"`
-	Msg     string `json:"msg"`
-	Message string `json:"message"`
-	Data    struct {
-		RoomID      int   `json:"room_id"`
-		ShortID     int   `json:"short_id"`
-		UID         int   `json:"uid"`
-		NeedP2P     int   `json:"need_p2p"`
-		IsHidden    bool  `json:"is_hidden"`
-		IsLocked    bool  `json:"is_locked"`
-		IsPortrait  bool  `json:"is_portrait"`
-		LiveStatus  int   `json:"live_status"`
-		HiddenTill  int   `json:"hidden_till"`
-		LockTill    int   `json:"lock_till"`
-		Encrypted   bool  `json:"encrypted"`
-		PwdVerified bool  `json:"pwd_verified"`
-		LiveTime    int64 `json:"live_time"`
-		RoomShield  int   `json:"room_shield"`
-		IsSp        int   `json:"is_sp"`
-		SpecialType int   `json:"special_type"`
-	} `json:"data"`
+	Code    int      `json:"code"`
+	Msg     string   `json:"msg"`
+	Message string   `json:"message"`
+	Data    RoomInfo `json:"data"`
 }
 
-// RoomInfoResp 直播房间信息
+type RoomInfo struct {
+	RoomID      int   `json:"room_id"`
+	ShortID     int   `json:"short_id"`
+	UID         int   `json:"uid"`
+	NeedP2P     int   `json:"need_p2p"`
+	IsHidden    bool  `json:"is_hidden"`
+	IsLocked    bool  `json:"is_locked"`
+	IsPortrait  bool  `json:"is_portrait"`
+	LiveStatus  int   `json:"live_status"`
+	HiddenTill  int   `json:"hidden_till"`
+	LockTill    int   `json:"lock_till"`
+	Encrypted   bool  `json:"encrypted"`
+	PwdVerified bool  `json:"pwd_verified"`
+	LiveTime    int64 `json:"live_time"`
+	RoomShield  int   `json:"room_shield"`
+	IsSp        int   `json:"is_sp"`
+	SpecialType int   `json:"special_type"`
+}
+
+// HostInfoResp 主播信息
 type HostInfoResp struct {
 	Code    int    `json:"code"`
 	Msg     string `json:"msg"`

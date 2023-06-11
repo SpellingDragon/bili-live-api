@@ -14,13 +14,13 @@ func TestUserInfo(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	userInfo, err := UserInfo(602310692)
+	userInfo, err := GetUserInfo(602310692)
 	userJson, _ := json.Marshal(userInfo)
 	println(string(userJson))
 	if err != nil {
 		t.Error(err)
 	}
-	followerInfo, err := FollowerInfo(3493141086734404)
+	followerInfo, err := GetFollowerInfo(3493141086734404)
 	followerJson, _ := json.Marshal(followerInfo)
 	println(string(followerJson))
 	if err != nil {

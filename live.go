@@ -16,12 +16,11 @@ import (
 
 // Live 使用 NewLive() 来初始化
 type Live struct {
-	Client      *websocket.Client
-	RoomID      int
-	LiverUname  string
-	LastTitle   string
-	Face        string
-	FollowerNum uint
+	Client       *websocket.Client
+	RoomID       int
+	RoomInfo     resource.RoomInfo
+	UserInfo     resource.UserInfo
+	FollowerInfo resource.FollowerInfo
 }
 
 // NewLive 构造函数
@@ -89,14 +88,14 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
-	liverInfo, err := resource.UserInfo(roomInfo.Data.UID)
+	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
 	liverInfoJson, _ := json.Marshal(liverInfo)
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	if err != nil {
 		log.Errorf("发送进入房间请求失败：%v", err)
 		return
 	}
-	l.setLiverProfile(liverInfo)
+	l.UserInfo = liverInfo.Data
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
 		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
 		ProtoVer: 3,                    // 填3
@@ -116,10 +115,11 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 func (l *Live) RefreshRoom() error {
 	roomInfo, err := resource.GetRoomInfo(l.RoomID)
 	if err != nil {
-		log.Errorf("刷新主播信息失败：%v", err)
+		log.Errorf("刷新直播信息失败：%v", err)
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
-	liverInfo, err := resource.UserInfo(roomInfo.Data.UID)
+	l.RoomInfo = roomInfo.Data
+	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
 	if err != nil {
 		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
@@ -130,12 +130,12 @@ func (l *Live) RefreshRoom() error {
 		return fmt.Errorf("刷新主播信息失败：%v", err)
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
-	l.setLiverProfile(liverInfo)
-	followerInfo, err := resource.FollowerInfo(roomInfo.Data.UID)
+	l.UserInfo = liverInfo.Data
+	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.UID)
 	if err != nil {
 		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
 	}
-	l.setFollowerNum(followerInfo)
+	l.FollowerInfo = followerInfo.Data
 	return nil
 }
 
@@ -146,26 +146,4 @@ func (l *Live) GetStreamURL(qn int) string {
 		return ""
 	}
 	return strings.ReplaceAll(playURL.Data.Durl[0].Url, "\\u0026", "&")
-}
-
-func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
-	if liverInfo == nil {
-		log.Warnf("没有正确获取到直播间的主播信息 state:%+v", l)
-		return
-	}
-	if liverInfo.Data.Name != "" {
-		l.LiverUname = liverInfo.Data.Name
-	}
-	if liverInfo.Data.LiveRoom.Title != "" {
-		l.LastTitle = liverInfo.Data.LiveRoom.Title
-	}
-	if liverInfo.Data.Face != "" {
-		l.Face = liverInfo.Data.Face
-	}
-}
-
-func (l *Live) setFollowerNum(liverInfo *resource.FollowerInfoResp) {
-	if liverInfo.Data.Follower != 0 {
-		l.FollowerNum = liverInfo.Data.Follower
-	}
 }
