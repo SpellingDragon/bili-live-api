@@ -113,7 +113,7 @@ type UserInfo struct {
 		Title      string `json:"title"`
 		IsShow     int    `json:"is_show"`
 	} `json:"profession"`
-	Tags   interface{} `json:"tags"`
+	Tags   []string `json:"tags"`
 	Series struct {
 		UserUpgradeStatus int  `json:"user_upgrade_status"`
 		ShowUpgradeWindow bool `json:"show_upgrade_window"`

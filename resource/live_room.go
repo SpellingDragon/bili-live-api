@@ -1,7 +1,11 @@
 package resource
 
 import (
+	"errors"
+	"net/http"
 	"strconv"
+
+	"github.com/spellingDragon/bili-live-api/log"
 )
 
 // RoomInfoResp 直播房间信息
@@ -99,7 +103,7 @@ type QualityDescription struct {
 // GetPlayURL 获取直播推流URL
 func GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
 	result := &PlayURLRsp{}
-	_, err := liveAPIClient.R().
+	rsp, err := liveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("cid", strconv.Itoa(shortID)).
 		SetQueryParam("otype", "json").
@@ -109,6 +113,10 @@ func GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
 		Get("/room/v1/Room/playUrl")
 	if err != nil {
 		return nil, err
+	}
+	if rsp.StatusCode() != http.StatusOK {
+		log.Warnf("获取直播推流URL失败:%+v", rsp)
+		return nil, errors.New(strconv.Itoa(rsp.StatusCode()))
 	}
 	return result, nil
 }
