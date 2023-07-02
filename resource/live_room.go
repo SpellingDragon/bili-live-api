@@ -17,22 +17,82 @@ type RoomInfoResp struct {
 }
 
 type RoomInfo struct {
-	RoomID      int   `json:"room_id"`
-	ShortID     int   `json:"short_id"`
-	UID         int   `json:"uid"`
-	NeedP2P     int   `json:"need_p2p"`
-	IsHidden    bool  `json:"is_hidden"`
-	IsLocked    bool  `json:"is_locked"`
-	IsPortrait  bool  `json:"is_portrait"`
-	LiveStatus  int   `json:"live_status"`
-	HiddenTill  int   `json:"hidden_till"`
-	LockTill    int   `json:"lock_till"`
-	Encrypted   bool  `json:"encrypted"`
-	PwdVerified bool  `json:"pwd_verified"`
-	LiveTime    int64 `json:"live_time"`
-	RoomShield  int   `json:"room_shield"`
-	IsSp        int   `json:"is_sp"`
-	SpecialType int   `json:"special_type"`
+	IsPortrait           bool        `yaml:"is_portrait"`
+	IsAnchor             int         `yaml:"is_anchor"`
+	PkId                 int         `yaml:"pk_id"`
+	RoomId               int         `yaml:"room_id"`
+	ShortId              int         `yaml:"short_id"`
+	LiveStatus           int         `yaml:"live_status"`
+	ParentAreaId         int         `yaml:"parent_area_id"`
+	NewPendants          NewPendants `yaml:"new_pendants"`
+	AllowUploadCoverTime int         `yaml:"allow_upload_cover_time"`
+	Description          string      `yaml:"description"`
+	Background           string      `yaml:"background"`
+	Title                string      `yaml:"title"`
+	Tags                 string      `yaml:"tags"`
+	RoomSilentSecond     int         `yaml:"room_silent_second"`
+	Pendants             string      `yaml:"pendants"`
+	HotWordsStatus       int         `yaml:"hot_words_status"`
+	UpSession            string      `yaml:"up_session"`
+	AllowChangeAreaTime  int         `yaml:"allow_change_area_time"`
+	Online               int         `yaml:"online"`
+	OldAreaId            int         `yaml:"old_area_id"`
+	UserCover            string      `yaml:"user_cover"`
+	Keyframe             string      `yaml:"keyframe"`
+	IsStrictRoom         bool        `yaml:"is_strict_room"`
+	RoomSilentLevel      int         `yaml:"room_silent_level"`
+	AreaName             string      `yaml:"area_name"`
+	PkStatus             int         `yaml:"pk_status"`
+	Attention            int         `yaml:"attention"`
+	Verify               string      `yaml:"verify"`
+	BattleId             int         `yaml:"battle_id"`
+	AreaId               int         `yaml:"area_id"`
+	RoomSilentType       string      `yaml:"room_silent_type"`
+	ParentAreaName       string      `yaml:"parent_area_name"`
+	LiveTime             string      `yaml:"live_time"`
+	StudioInfo           StudioInfo  `yaml:"studio_info"`
+	Uid                  int         `yaml:"uid"`
+	AreaPendants         string      `yaml:"area_pendants"`
+	HotWords             []string    `yaml:"hot_words"`
+}
+
+// NewPendants
+type NewPendants struct {
+	Frame       Frame       `yaml:"frame"`
+	Badge       interface{} `yaml:"badge"`
+	MobileFrame MobileFrame `yaml:"mobile_frame"`
+	MobileBadge interface{} `yaml:"mobile_badge"`
+}
+
+// Frame
+type Frame struct {
+	UseOldArea bool   `yaml:"use_old_area"`
+	Name       string `yaml:"name"`
+	Desc       string `yaml:"desc"`
+	Area       int    `yaml:"area"`
+	BgColor    string `yaml:"bg_color"`
+	BgPic      string `yaml:"bg_pic"`
+	Value      string `yaml:"value"`
+	Position   int    `yaml:"position"`
+	AreaOld    int    `yaml:"area_old"`
+}
+
+// MobileFrame
+type MobileFrame struct {
+	Name       string `yaml:"name"`
+	Value      string `yaml:"value"`
+	Area       int    `yaml:"area"`
+	UseOldArea bool   `yaml:"use_old_area"`
+	Position   int    `yaml:"position"`
+	Desc       string `yaml:"desc"`
+	AreaOld    int    `yaml:"area_old"`
+	BgColor    string `yaml:"bg_color"`
+	BgPic      string `yaml:"bg_pic"`
+}
+
+// StudioInfo
+type StudioInfo struct {
+	Status int `yaml:"status"`
 }
 
 // HostInfoResp 主播信息
@@ -50,9 +110,9 @@ func GetRoomInfo(shortID int) (*RoomInfoResp, error) {
 	result := &RoomInfoResp{}
 	_, err := liveAPIClient.R().
 		EnableTrace().
-		SetQueryParam("id", strconv.Itoa(shortID)).
+		SetQueryParam("room_id", strconv.Itoa(shortID)).
 		SetResult(result).
-		Get("/room/v1/Room/room_init")
+		Get("/room/v1/Room/get_info")
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +125,7 @@ func RealRoomID(shortID int) (int, error) {
 	if err != nil {
 		return 0, err
 	}
-	return info.Data.RoomID, nil
+	return info.Data.RoomId, nil
 }
 
 // PlayURLRsp

@@ -8,7 +8,7 @@ import (
 )
 
 func TestUserInfo(t *testing.T) {
-	roomRsp, err := GetRoomInfo(2075179777)
+	roomRsp, err := GetRoomInfo(24190721)
 	roomJson, _ := json.Marshal(roomRsp)
 	println(string(roomJson))
 	if err != nil {
