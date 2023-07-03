@@ -88,7 +88,7 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
-	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
+	liverInfo, err := resource.GetUserInfo(roomInfo.Data.Uid)
 	liverInfoJson, _ := json.Marshal(liverInfo)
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	if err != nil {
@@ -97,7 +97,7 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 	}
 	l.UserInfo = &liverInfo.Data
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
-		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
+		RoomID:   roomInfo.Data.RoomId, // 真实房间ID
 		ProtoVer: 3,                    // 填3
 		Platform: "web",
 		Type:     2,
@@ -119,7 +119,7 @@ func (l *Live) RefreshRoom() error {
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
 	l.RoomInfo = &roomInfo.Data
-	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
+	liverInfo, err := resource.GetUserInfo(roomInfo.Data.Uid)
 	if err != nil {
 		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
@@ -131,7 +131,7 @@ func (l *Live) RefreshRoom() error {
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	l.UserInfo = &liverInfo.Data
-	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.UID)
+	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.Uid)
 	if err != nil {
 		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
 	}
