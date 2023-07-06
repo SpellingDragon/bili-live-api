@@ -57,7 +57,7 @@ func (l *Live) Stop() {
 }
 
 func (l *Live) Listen() error {
-	roomInfoResponse, err := resource.GetRoomInfo(l.RoomID)
+	roomInitInfo, err := resource.RoomInit(l.RoomID)
 	if err != nil {
 		return fmt.Errorf("获取房间号失败：%v", err)
 	}
@@ -67,7 +67,7 @@ func (l *Live) Listen() error {
 	}
 
 	// TODO 发送进房包,可能有顺序问题
-	go l.enterRoom(roomInfoResponse)
+	go l.enterRoom(roomInitInfo)
 
 	if err := l.Client.Listening(); err != nil {
 		return fmt.Errorf("监听websocket失败：%v", err)
@@ -85,10 +85,10 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 }
 
 // 发送进入房间请求
-func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
+func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
-	liverInfo, err := resource.GetUserInfo(roomInfo.Data.Uid)
+	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
 	liverInfoJson, _ := json.Marshal(liverInfo)
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	if err != nil {
@@ -96,11 +96,17 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 		return
 	}
 	l.UserInfo = &liverInfo.Data
+	getDanmu, err := resource.GetDanmuInfo(roomInfo.Data.RoomID)
+	if err != nil {
+		log.Errorf("发送进入房间请求失败：%v", err)
+		return
+	}
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
-		RoomID:   roomInfo.Data.RoomId, // 真实房间ID
+		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
 		ProtoVer: 3,                    // 填3
 		Platform: "web",
 		Type:     2,
+		Key:      getDanmu.Data.Token,
 	})
 	if err = l.Client.Write(&dto.WSPayload{
 		ProtocolVersion: dto.JSON,
@@ -119,7 +125,7 @@ func (l *Live) RefreshRoom() error {
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
 	l.RoomInfo = &roomInfo.Data
-	liverInfo, err := resource.GetUserInfo(roomInfo.Data.Uid)
+	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
 	if err != nil {
 		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
@@ -131,7 +137,7 @@ func (l *Live) RefreshRoom() error {
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	l.UserInfo = &liverInfo.Data
-	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.Uid)
+	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.UID)
 	if err != nil {
 		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
 	}

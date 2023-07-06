@@ -22,4 +22,5 @@ type WSEnterRoomBody struct {
 	ProtoVer int    `json:"protover"`
 	Platform string `json:"platform"`
 	Type     int    `json:"type"`
+	Key      string `json:"key"`
 }
