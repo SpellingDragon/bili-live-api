@@ -25,7 +25,6 @@ func notificationHandler(payload *dto.WSPayload, client *Client) {
 	var handler eventPayloadHandler
 	// HACK 更新后收到的cmd会变为"DANMU_MSG:4:0:2:2:2:0", 在此特殊处理
 	if strings.HasPrefix(eType, "DANMU_MSG") {
-		log.Debug("收到CMD消息:", eType, string(payload.Body))
 		handler = eventPayloadHandlerMap[dto.EventDanmaku]
 	} else {
 		eventType := dto.EventType(eType)
