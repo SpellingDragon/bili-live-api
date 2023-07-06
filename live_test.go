@@ -1,21 +1,22 @@
 package api
 
 import (
+	"bufio"
+	"log"
+	"os"
 	"testing"
-
-	"github.com/spellingDragon/bili-live-api/resource"
 )
 
 func TestLive(t *testing.T) {
+	file, _ := os.Create("test.log")
+	defer file.Close()
+	log.SetOutput(bufio.NewWriter(file))
 	live := NewLive(24441860)
-	roomInit, err := resource.RoomInit(24441860)
-	if err != nil {
-		t.Error(err)
-	}
-	go live.enterRoom(roomInit)
-	if err := live.Client.Listening(); err != nil {
-		t.Errorf("监听websocket失败：%v", err)
-	}
+	// roomInit, err := resource.RoomInit(24441860)
+	// if err != nil {
+	// 	t.Error(err)
+	// }
+	live.Start()
 	//
 	// streamURL := live.GetStreamURL(150)
 	// println(streamURL)
