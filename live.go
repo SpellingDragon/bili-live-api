@@ -125,7 +125,11 @@ func (l *Live) RefreshRoom() error {
 		log.Errorf("刷新直播信息失败：%v", err)
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
+	latestLiveTime := l.RoomInfo.LiveTime
 	l.RoomInfo = &roomInfo.Data
+	if l.RoomInfo.LiveTime == "0000-00-00 00:00:00" {
+		l.RoomInfo.LiveTime = latestLiveTime
+	}
 	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
 	if err != nil {
 		log.Errorf("刷新主播信息失败：%v", err)
