@@ -102,7 +102,7 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 		return
 	}
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
-		UID:      1,
+		UID:      602310692,
 		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
 		ProtoVer: 3,                    // 填3
 		Platform: "web",
