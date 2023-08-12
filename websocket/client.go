@@ -2,6 +2,7 @@ package websocket
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	wss "github.com/gorilla/websocket"
@@ -41,8 +42,14 @@ func New() *Client {
 
 // Connect 连接到B站直播服务端
 func (client *Client) Connect() error {
+	var bilibiliCommonHeaders = http.Header{
+		"Origin":     []string{"https://www.bilibili.com"},
+		"Referer":    []string{"https://www.bilibili.com/"},
+		"User-Agent": []string{resource.UserAgentValue},
+	}
+
 	var err error
-	client.conn, _, err = wss.DefaultDialer.Dial(resource.WSUrl, nil)
+	client.conn, _, err = wss.DefaultDialer.Dial(resource.WSUrl, bilibiliCommonHeaders)
 	if err != nil {
 		log.Errorf("websocket connect error: %v", err)
 		return err
