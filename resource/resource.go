@@ -23,11 +23,11 @@ const (
 var (
 	CookiePath = "cookie.json"
 	// 通用
-	liveAPIClient = newClient(CookiePath).SetDebug(true).SetBaseURL(LiveAPIURL)
+	liveAPIClient = newClient(CookiePath).SetDebug(false).SetBaseURL(LiveAPIURL)
 	// 用户信息
-	apiClient = newClient(CookiePath).SetDebug(true).SetBaseURL(APIURL)
+	apiClient = newClient(CookiePath).SetDebug(false).SetBaseURL(APIURL)
 	// 动态
-	vcApiClient = newClient(CookiePath).SetDebug(true).SetBaseURL(VcAPIURL)
+	vcApiClient = newClient(CookiePath).SetDebug(false).SetBaseURL(VcAPIURL)
 )
 
 func SetBiliAPICookiePath(path string, debug bool) {
