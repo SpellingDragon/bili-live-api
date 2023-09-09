@@ -29,23 +29,27 @@ type Client struct {
 	closeCh              chan bool
 	messageCh            chan *dto.WSPayload
 	DefaultEventHandlers DefaultEventHandlers
+	CookiePath           string
 }
 
 // New 创建websocket客户端
-func New() *Client {
+func New(cookiePath string) *Client {
 	return &Client{
 		heartbeatTicker: time.NewTicker(heartbeatInterval),
 		messageCh:       make(chan *dto.WSPayload, 10),
 		closeCh:         make(chan bool, 10),
+		CookiePath:      cookiePath,
 	}
 }
 
 // Connect 连接到B站直播服务端
 func (client *Client) Connect() error {
+	cookie, _ := resource.GetCookie(client.CookiePath)
 	var bilibiliCommonHeaders = http.Header{
 		"Origin":     []string{"https://www.bilibili.com"},
 		"Referer":    []string{"https://www.bilibili.com/"},
 		"User-Agent": []string{resource.UserAgentValue},
+		"Cookie":     []string{cookie},
 	}
 
 	var err error

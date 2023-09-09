@@ -1,6 +1,8 @@
 package resource
 
-import "github.com/go-resty/resty/v2"
+import (
+	"github.com/go-resty/resty/v2"
+)
 
 const (
 	// WSUrl B站直播websocket接入地址
@@ -11,7 +13,7 @@ const (
 	APIURL         = "https://api.bilibili.com"
 	VcAPIURL       = "https://api.vc.bilibili.com"
 	UserAgentKey   = "User-Agent"
-	UserAgentValue = "mengzhongshenjun/0.0.1-beta"
+	UserAgentValue = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0"
 	AcceptKey      = "Accept"
 	AcceptValue    = "application/json, text/plain, */*"
 	CookieKey      = "Cookie"
@@ -19,14 +21,24 @@ const (
 )
 
 var (
+	CookiePath = "cookie.json"
 	// 通用
-	liveAPIClient = newClient().SetDebug(false).SetBaseURL(LiveAPIURL)
+	liveAPIClient = newClient(CookiePath).SetDebug(true).SetBaseURL(LiveAPIURL)
 	// 用户信息
-	apiClient = newClient().SetDebug(false).SetBaseURL(APIURL)
+	apiClient = newClient(CookiePath).SetDebug(true).SetBaseURL(APIURL)
 	// 动态
-	vcApiClient = newClient().SetDebug(false).SetBaseURL(VcAPIURL)
+	vcApiClient = newClient(CookiePath).SetDebug(true).SetBaseURL(VcAPIURL)
 )
 
-func newClient() *resty.Client {
-	return resty.New().SetHeader(UserAgentKey, UserAgentValue).SetHeader(CookieKey, CookieValue)
+func SetBiliAPICookiePath(path string, debug bool) {
+	CookiePath = path
+	liveAPIClient = newClient(CookiePath).SetDebug(debug).SetBaseURL(LiveAPIURL)
+	apiClient = newClient(CookiePath).SetDebug(debug).SetBaseURL(APIURL)
+	vcApiClient = newClient(CookiePath).SetDebug(debug).SetBaseURL(VcAPIURL)
+}
+
+func newClient(cookiePath string) *resty.Client {
+	return resty.New().SetHeader(UserAgentKey, UserAgentValue).
+		SetHeader(CookieKey, CookieValue).
+		SetCookies(ListHttpCookies(cookiePath))
 }

@@ -26,7 +26,7 @@ type Live struct {
 // NewLive 构造函数
 func NewLive(roomID int) *Live {
 	return &Live{
-		Client: websocket.New(),
+		Client: websocket.New(resource.CookiePath),
 		RoomID: roomID,
 	}
 }

@@ -7,19 +7,25 @@ import (
 	jsoniter "github.com/json-iterator/go"
 )
 
-func TestUserInfo(t *testing.T) {
+func TestRoomInfo(t *testing.T) {
 	roomRsp, err := GetRoomInfo(24190721)
 	roomJson, _ := json.Marshal(roomRsp)
 	println(string(roomJson))
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestUserInfo(t *testing.T) {
 	userInfo, err := GetUserInfo(2075179777)
 	userJson, _ := json.Marshal(userInfo)
 	println(string(userJson))
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestFollowInfo(t *testing.T) {
 	followerInfo, err := GetFollowerInfo(2075179777)
 	followerJson, _ := json.Marshal(followerInfo)
 	println(string(followerJson))
