@@ -159,5 +159,9 @@ func (l *Live) GetStreamURL(qn int) string {
 		log.Errorf("获取直播推流链接失败：%v", err)
 		return ""
 	}
+	if len(playURL.Data.Durl) == 0 {
+		log.Errorf("获取直播推流链接失败：%v", playURL)
+		return ""
+	}
 	return strings.ReplaceAll(playURL.Data.Durl[0].Url, "\\u0026", "&")
 }
