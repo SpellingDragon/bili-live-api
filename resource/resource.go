@@ -31,10 +31,9 @@ var (
 )
 
 func SetBiliAPICookiePath(path string, debug bool) {
-	CookiePath = path
-	liveAPIClient = newClient(CookiePath).SetDebug(debug).SetBaseURL(LiveAPIURL)
-	apiClient = newClient(CookiePath).SetDebug(debug).SetBaseURL(APIURL)
-	vcApiClient = newClient(CookiePath).SetDebug(debug).SetBaseURL(VcAPIURL)
+	liveAPIClient = newClient(path).SetDebug(debug).SetBaseURL(LiveAPIURL)
+	apiClient = newClient(path).SetDebug(debug).SetBaseURL(APIURL)
+	vcApiClient = newClient(path).SetDebug(debug).SetBaseURL(VcAPIURL)
 }
 
 func newClient(cookiePath string) *resty.Client {
