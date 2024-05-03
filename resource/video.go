@@ -138,9 +138,9 @@ type Stat struct {
 	NowRank    int    `json:"now_rank"`
 }
 
-func VideoInfo(bvId string) (*VideoInfoResponse, error) {
+func (a *API) VideoInfo(bvId string) (*VideoInfoResponse, error) {
 	videoInfo := &VideoInfoResponse{}
-	_, err := apiClient.R().
+	_, err := a.CommonAPIClient.R().
 		SetQueryParam("bvid", bvId).
 		SetResult(videoInfo).
 		Get("/x/web-interface/view")
@@ -197,9 +197,9 @@ type Count struct {
 	Atten int `json:"atten"`
 }
 
-func VideoTags(video Video) (*VideoTagResponse, error) {
+func (a *API) VideoTags(video Video) (*VideoTagResponse, error) {
 	videoTags := &VideoTagResponse{}
-	_, err := apiClient.R().
+	_, err := a.CommonAPIClient.R().
 		SetQueryParam("aid", strconv.Itoa(video.Aid)).
 		SetQueryParam("cid", strconv.Itoa(video.Cid)).
 		SetResult(videoTags).

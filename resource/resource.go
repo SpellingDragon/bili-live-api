@@ -20,20 +20,35 @@ const (
 	CookieValue    = "buvid3=hi"
 )
 
-var (
-	CookiePath = "cookie.json"
-	// 通用
-	liveAPIClient = newClient(CookiePath).SetDebug(false).SetBaseURL(LiveAPIURL)
-	// 用户信息
-	apiClient = newClient(CookiePath).SetDebug(false).SetBaseURL(APIURL)
-	// 动态
-	vcApiClient = newClient(CookiePath).SetDebug(false).SetBaseURL(VcAPIURL)
-)
+type API struct {
+	CookiePath      string
+	LiveAPIClient   *resty.Client
+	CommonAPIClient *resty.Client
+	VcAPIClient     *resty.Client
+}
 
-func SetBiliAPICookiePath(path string, debug bool) {
-	liveAPIClient = newClient(path).SetDebug(debug).SetBaseURL(LiveAPIURL)
-	apiClient = newClient(path).SetDebug(debug).SetBaseURL(APIURL)
-	vcApiClient = newClient(path).SetDebug(debug).SetBaseURL(VcAPIURL)
+func New() *API {
+	a := &API{}
+	a.CookiePath = "cookie.json"
+	// 通用
+	a.LiveAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(LiveAPIURL)
+	// 用户信息
+	a.CommonAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(APIURL)
+	// 动态
+	a.VcAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(VcAPIURL)
+	return a
+}
+
+func NewWithOptions(path string, debug bool) *API {
+	a := &API{}
+	a.CookiePath = path
+	// 通用
+	a.LiveAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(LiveAPIURL)
+	// 用户信息
+	a.CommonAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(APIURL)
+	// 动态
+	a.VcAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(VcAPIURL)
+	return a
 }
 
 func newClient(cookiePath string) *resty.Client {

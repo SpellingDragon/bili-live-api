@@ -158,9 +158,9 @@ type HostInfoResp struct {
 }
 
 // RoomInit 获取直播间详细信息
-func RoomInit(shortID int) (*RoomInitResp, error) {
+func (a *API) RoomInit(shortID int) (*RoomInitResp, error) {
 	result := &RoomInitResp{}
-	_, err := liveAPIClient.R().
+	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("id", strconv.Itoa(shortID)).
 		SetResult(result).
@@ -172,9 +172,9 @@ func RoomInit(shortID int) (*RoomInitResp, error) {
 }
 
 // GetDanmuInfo 获取弹幕数据
-func GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
+func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 	result := &GetDanmuInfoRsp{}
-	_, err := liveAPIClient.R().
+	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("id", strconv.Itoa(shortID)).
 		SetResult(result).
@@ -186,9 +186,9 @@ func GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 }
 
 // GetRoomInfo 获取直播间详细信息
-func GetRoomInfo(shortID int) (*RoomInfoResp, error) {
+func (a *API) GetRoomInfo(shortID int) (*RoomInfoResp, error) {
 	result := &RoomInfoResp{}
-	_, err := liveAPIClient.R().
+	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("room_id", strconv.Itoa(shortID)).
 		SetResult(result).
@@ -200,8 +200,8 @@ func GetRoomInfo(shortID int) (*RoomInfoResp, error) {
 }
 
 // RealRoomID 获取真实直播房间号,主要用于websocket连接
-func RealRoomID(shortID int) (int, error) {
-	info, err := GetRoomInfo(shortID)
+func (a *API) RealRoomID(shortID int) (int, error) {
+	info, err := a.GetRoomInfo(shortID)
 	if err != nil {
 		return 0, err
 	}
@@ -241,9 +241,9 @@ type QualityDescription struct {
 }
 
 // GetPlayURL 获取直播推流URL
-func GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
+func (a *API) GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
 	result := &PlayURLRsp{}
-	rsp, err := liveAPIClient.R().
+	rsp, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("cid", strconv.Itoa(shortID)).
 		SetQueryParam("otype", "json").

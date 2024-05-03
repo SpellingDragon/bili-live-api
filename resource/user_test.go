@@ -8,7 +8,8 @@ import (
 )
 
 func TestRoomInfo(t *testing.T) {
-	roomRsp, err := GetRoomInfo(24190721)
+	a := New()
+	roomRsp, err := a.GetRoomInfo(24190721)
 	roomJson, _ := json.Marshal(roomRsp)
 	println(string(roomJson))
 	if err != nil {
@@ -17,7 +18,8 @@ func TestRoomInfo(t *testing.T) {
 }
 
 func TestUserInfo(t *testing.T) {
-	userInfo, err := GetUserInfo(2075179777)
+	a := New()
+	userInfo, err := a.GetUserInfo(2075179777)
 	userJson, _ := json.Marshal(userInfo)
 	println(string(userJson))
 	if err != nil {
@@ -26,7 +28,8 @@ func TestUserInfo(t *testing.T) {
 }
 
 func TestFollowInfo(t *testing.T) {
-	followerInfo, err := GetFollowerInfo(2075179777)
+	a := New()
+	followerInfo, err := a.GetFollowerInfo(2075179777)
 	followerJson, _ := json.Marshal(followerInfo)
 	println(string(followerJson))
 	if err != nil {
@@ -38,17 +41,19 @@ func TestFollowInfo(t *testing.T) {
 }
 
 func TestVideoInfo(t *testing.T) {
-	video, _ := VideoInfo("BV18d4y1n73r")
+	a := New()
+	video, _ := a.VideoInfo("BV18d4y1n73r")
 	// videoJson, _ := jsoniter.Marshal(video)
 	// println(string(videoJson))
-	tags, _ := VideoTags(video.Data)
+	tags, _ := a.VideoTags(video.Data)
 	// println(tags.Data[1].TagName)
 	tagJson, _ := jsoniter.MarshalToString(tags)
 	println(tagJson)
 }
 
 func TestRoom(t *testing.T) {
-	roomRsp, err := GetPlayURL(21013446, 150)
+	a := New()
+	roomRsp, err := a.GetPlayURL(21013446, 150)
 	roomJson, _ := json.Marshal(roomRsp)
 	println(string(roomJson))
 	if err != nil {

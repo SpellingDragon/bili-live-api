@@ -17,17 +17,21 @@ import (
 // Live 使用 NewLive() 来初始化
 type Live struct {
 	Client       *websocket.Client
+	ResourceAPI  *resource.API
 	RoomID       int
 	RoomInfo     *resource.RoomInfo
 	UserInfo     *resource.UserInfo
 	FollowerInfo *resource.FollowerInfo
 }
 
+const DefaultCookiePath = "cookie.json"
+
 // NewLive 构造函数
 func NewLive(roomID int) *Live {
 	return &Live{
-		Client: websocket.New(resource.CookiePath),
-		RoomID: roomID,
+		Client:      websocket.New(DefaultCookiePath),
+		ResourceAPI: resource.NewWithOptions(DefaultCookiePath, false),
+		RoomID:      roomID,
 	}
 }
 
@@ -57,7 +61,7 @@ func (l *Live) Stop() {
 }
 
 func (l *Live) Listen() error {
-	roomInitInfo, err := resource.RoomInit(l.RoomID)
+	roomInitInfo, err := l.ResourceAPI.RoomInit(l.RoomID)
 	if err != nil {
 		return fmt.Errorf("获取房间号失败：%v", err)
 	}
@@ -88,7 +92,7 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
-	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
+	liverInfo, err := l.ResourceAPI.GetUserInfo(roomInfo.Data.UID)
 	liverInfoJson, _ := json.Marshal(liverInfo)
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	if err != nil {
@@ -96,7 +100,7 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 		return
 	}
 	l.UserInfo = &liverInfo.Data
-	getDanmu, err := resource.GetDanmuInfo(roomInfo.Data.RoomID)
+	getDanmu, err := l.ResourceAPI.GetDanmuInfo(roomInfo.Data.RoomID)
 	if err != nil {
 		log.Errorf("发送进入房间请求失败：%v", err)
 		return
@@ -120,7 +124,7 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 }
 
 func (l *Live) RefreshRoom() error {
-	roomInfo, err := resource.GetRoomInfo(l.RoomID)
+	roomInfo, err := l.ResourceAPI.GetRoomInfo(l.RoomID)
 	if err != nil {
 		log.Errorf("刷新直播信息失败：%v", err)
 		return fmt.Errorf("刷新房间信息失败：%v", err)
@@ -133,7 +137,7 @@ func (l *Live) RefreshRoom() error {
 	if l.RoomInfo.LiveTime == "0000-00-00 00:00:00" {
 		l.RoomInfo.LiveTime = latestLiveTime
 	}
-	liverInfo, err := resource.GetUserInfo(roomInfo.Data.UID)
+	liverInfo, err := l.ResourceAPI.GetUserInfo(roomInfo.Data.UID)
 	if err != nil {
 		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
@@ -145,7 +149,7 @@ func (l *Live) RefreshRoom() error {
 	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
 	l.UserInfo = &liverInfo.Data
-	followerInfo, err := resource.GetFollowerInfo(roomInfo.Data.UID)
+	followerInfo, err := l.ResourceAPI.GetFollowerInfo(roomInfo.Data.UID)
 	if err != nil {
 		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
 	}
@@ -154,7 +158,7 @@ func (l *Live) RefreshRoom() error {
 }
 
 func (l *Live) GetStreamURL(qn int) string {
-	playURL, err := resource.GetPlayURL(l.RoomID, qn)
+	playURL, err := l.ResourceAPI.GetPlayURL(l.RoomID, qn)
 	if err != nil {
 		log.Errorf("获取直播推流链接失败：%v", err)
 		return ""

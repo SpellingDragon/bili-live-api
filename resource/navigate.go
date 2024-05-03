@@ -14,9 +14,9 @@ type WbiImg struct {
 	SubUrl string `json:"sub_url"`
 }
 
-func Nav() (*NavResp, error) {
+func (a *API) Nav() (*NavResp, error) {
 	navInfo := &NavResp{}
-	_, err := apiClient.R().
+	_, err := a.CommonAPIClient.R().
 		SetResult(navInfo).
 		Get("/x/web-interface/nav")
 	if err != nil {
@@ -25,8 +25,8 @@ func Nav() (*NavResp, error) {
 	return navInfo, nil
 }
 
-func GetWRID(params map[string]interface{}) (int64, string) {
-	navInfo, _ := Nav()
+func (a *API) GetWRID(params map[string]interface{}) (int64, string) {
+	navInfo, _ := a.Nav()
 	mainKey, subKey, _ := GetWbiKeys(navInfo.Data.WbiImg.ImgUrl, navInfo.Data.WbiImg.SubUrl)
 	return EncWbi(params, mainKey, subKey)
 }

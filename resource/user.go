@@ -121,12 +121,12 @@ type UserInfo struct {
 	IsSeniorMember int `json:"is_senior_member"`
 }
 
-func GetUserInfo(uid int) (*UserInfoResp, error) {
-	wts, wrid := GetWRID(map[string]interface{}{
+func (a *API) GetUserInfo(uid int) (*UserInfoResp, error) {
+	wts, wrid := a.GetWRID(map[string]interface{}{
 		"mid": uid,
 	})
 	userInfo := &UserInfoResp{}
-	_, err := apiClient.R().
+	_, err := a.CommonAPIClient.R().
 		SetQueryParam("mid", strconv.Itoa(uid)).
 		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
 		SetQueryParam("w_rid", wrid).
@@ -154,9 +154,9 @@ type FollowerInfo struct {
 	Follower  uint `json:"follower"`
 }
 
-func GetFollowerInfo(uid int) (*FollowerInfoResp, error) {
+func (a *API) GetFollowerInfo(uid int) (*FollowerInfoResp, error) {
 	userInfo := &FollowerInfoResp{}
-	_, err := apiClient.R().
+	_, err := a.CommonAPIClient.R().
 		SetQueryParam("vmid", strconv.Itoa(uid)).
 		SetResult(userInfo).
 		Get("/x/relation/stat")
