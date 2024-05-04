@@ -24,13 +24,11 @@ type Live struct {
 	FollowerInfo *resource.FollowerInfo
 }
 
-const DefaultCookiePath = "cookie.json"
-
 // NewLive 构造函数
 func NewLive(roomID int) *Live {
 	return &Live{
-		Client:      websocket.New(DefaultCookiePath),
-		ResourceAPI: resource.NewWithOptions(DefaultCookiePath, false),
+		Client:      websocket.New(resource.DefaultCookiePath),
+		ResourceAPI: resource.NewWithOptions(resource.DefaultCookiePath, false),
 		RoomID:      roomID,
 	}
 }
