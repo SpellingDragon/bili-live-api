@@ -35,6 +35,15 @@ func NewLive(roomID int) *Live {
 	}
 }
 
+// NewLiveWithPath 构造函数
+func NewLiveWithPath(roomID int, path string, debug bool) *Live {
+	return &Live{
+		Client:      websocket.New(path),
+		ResourceAPI: resource.NewWithOptions(path, debug),
+		RoomID:      roomID,
+	}
+}
+
 // Start 接收房间号，开始websocket心跳连接并阻塞
 func (l *Live) Start() {
 	for {
