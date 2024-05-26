@@ -68,8 +68,8 @@ func GetCookieInfo(cookiePath string) *CookieInfo {
 			return nil
 		}
 		lock.Lock()
-		defer lock.Unlock()
 		err = os.WriteFile(cookiePath, loginInfo, 0644)
+		lock.Unlock()
 		if err != nil {
 			log.Printf("%s无法使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err.Error())
 			return nil
