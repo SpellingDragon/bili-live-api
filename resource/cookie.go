@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
@@ -45,6 +46,8 @@ const DefaultCookiePath = "cookie.json"
 const CopiedLoginInfoCode = 1
 const NearlyExpiredLoginInfoCode = 2
 
+var lock = sync.Mutex{}
+
 func GetCookieInfo(cookiePath string) *CookieInfo {
 	cookieInfo := &CookieInfo{}
 	loginInfo, err := os.ReadFile(cookiePath)
@@ -52,7 +55,7 @@ func GetCookieInfo(cookiePath string) *CookieInfo {
 		log.Printf("登录信息%s不存在,使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err)
 		// 如果不是，则拷贝默认的cookies.json文件到指定路径
 		loginInfo, err = os.ReadFile(DefaultCookiePath) // 假设默认文件名为default_cookies.json
-		if err != nil {
+		if err != nil || len(loginInfo) == 0 {
 			log.Printf("%s无法使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err.Error())
 			return nil
 		}
@@ -64,6 +67,8 @@ func GetCookieInfo(cookiePath string) *CookieInfo {
 			log.Printf("%s无法使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err.Error())
 			return nil
 		}
+		lock.Lock()
+		defer lock.Unlock()
 		err = os.WriteFile(cookiePath, loginInfo, 0644)
 		if err != nil {
 			log.Printf("%s无法使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err.Error())

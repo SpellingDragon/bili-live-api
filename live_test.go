@@ -21,6 +21,6 @@ func TestLive(t *testing.T) {
 	// }
 	live.Start()
 	//
-	// streamURL := live.GetStreamURL(150)
-	// println(streamURL)
+	streamURL := live.GetStreamURL(150)
+	println(streamURL)
 }
