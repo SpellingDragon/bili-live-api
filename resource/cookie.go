@@ -56,7 +56,7 @@ func GetCookieInfo(cookiePath string) *CookieInfo {
 		// 如果不是，则拷贝默认的cookies.json文件到指定路径
 		loginInfo, err = os.ReadFile(DefaultCookiePath) // 假设默认文件名为default_cookies.json
 		if err != nil || len(loginInfo) == 0 {
-			log.Printf("%s无法使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err.Error())
+			log.Printf("%s无法使用默认登录信息%s:%+v", cookiePath, DefaultCookiePath, err)
 			return nil
 		}
 		_ = jsoniter.Unmarshal(loginInfo, &cookieInfo)
