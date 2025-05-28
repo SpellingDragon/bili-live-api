@@ -184,12 +184,6 @@ func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 	if err != nil {
 		return nil, err
 	}
-	result.Data.HostList = append(result.Data.HostList, HostList{
-		Host:    "broadcastlv.chat.bilibili.com",
-		Port:    2243,
-		WsPort:  2244,
-		WssPort: 2245,
-	})
 	return result, nil
 }
 

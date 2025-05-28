@@ -85,7 +85,8 @@ func (l *Live) Listen() error {
 	// 尝试连接可用的主机（倒序尝试，与Python版本保持一致）
 	var wsUrl string
 	var connectErr error
-	for _, host := range hostList {
+	for i := len(hostList) - 1; i >= 0; i-- {
+		host := hostList[i]
 		wsUrl = fmt.Sprintf("wss://%s:%d/sub", host.Host, host.WssPort)
 		log.Infof("正在尝试连接主机：%s", wsUrl)
 
