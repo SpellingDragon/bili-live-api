@@ -18,7 +18,7 @@ type CookieInfo struct {
 	Ttl     int64  `json:"ttl"`
 	Data    struct {
 		IsNew        bool   `json:"is_new"`
-		Mid          int    `json:"mid"`
+		Mid          int64  `json:"mid"`
 		AccessToken  string `json:"access_token"`
 		RefreshToken string `json:"refresh_token"`
 		ExpiresIn    int64  `json:"expires_in"`
@@ -141,7 +141,7 @@ func ListHttpCookies(cookiePath string) []*http.Cookie {
 }
 
 // GetUserIDFromCookie 从cookie中获取用户ID (DedeUserID)
-func GetUserIDFromCookie(cookiePath string) (int, error) {
+func GetUserIDFromCookie(cookiePath string) (int64, error) {
 	cookieInfo := GetCookieInfo(cookiePath)
 	if cookieInfo == nil {
 		return 0, fmt.Errorf("无法获取cookie信息")
@@ -154,7 +154,7 @@ func GetUserIDFromCookie(cookiePath string) (int, error) {
 			if err != nil {
 				return 0, fmt.Errorf("解析DedeUserID失败: %v", err)
 			}
-			return int(uid), nil
+			return uid, nil
 		}
 	}
 

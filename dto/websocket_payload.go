@@ -17,7 +17,7 @@ type WSNotificationBody struct {
 }
 
 type WSEnterRoomBody struct {
-	UID      int    `json:"uid"`
+	UID      int64  `json:"uid"`
 	RoomID   int    `json:"roomid"`
 	ProtoVer int    `json:"protover"`
 	Platform string `json:"platform"`
