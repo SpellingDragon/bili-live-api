@@ -177,11 +177,19 @@ func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("id", strconv.Itoa(shortID)).
+		SetQueryParam("type", "0").
+		SetQueryParam("web_location", "444.8").
 		SetResult(result).
 		Get("/xlive/web-room/v1/index/getDanmuInfo")
 	if err != nil {
 		return nil, err
 	}
+	result.Data.HostList = append(result.Data.HostList, HostList{
+		Host:    "broadcastlv.chat.bilibili.com",
+		Port:    2243,
+		WsPort:  2244,
+		WssPort: 2245,
+	})
 	return result, nil
 }
 

@@ -44,6 +44,7 @@ func New(cookiePath string) *Client {
 
 // Connect 连接到B站直播服务端
 func (client *Client) Connect(wsUrl string) error {
+	log.Infof("ws url: %s", wsUrl)
 	cookie, _ := resource.GetCookie(client.CookiePath)
 	var bilibiliCommonHeaders = http.Header{
 		"Origin":     []string{"https://www.bilibili.com"},
