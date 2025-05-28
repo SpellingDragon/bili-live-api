@@ -75,21 +75,20 @@ func (l *Live) Listen() error {
 	if err != nil {
 		return fmt.Errorf("获取弹幕服务器配置失败：%v", err)
 	}
-	
+
 	// 动态选择WebSocket服务器
 	hostList := getDanmu.Data.HostList
 	if len(hostList) == 0 {
 		return fmt.Errorf("没有可用的WebSocket服务器")
 	}
-	
+
 	// 尝试连接可用的主机（倒序尝试，与Python版本保持一致）
 	var wsUrl string
 	var connectErr error
-	for i := len(hostList) - 1; i >= 0; i-- {
-		host := hostList[i]
+	for _, host := range hostList {
 		wsUrl = fmt.Sprintf("wss://%s:%d/sub", host.Host, host.WssPort)
 		log.Infof("正在尝试连接主机：%s", wsUrl)
-		
+
 		connectErr = l.Client.Connect(wsUrl)
 		if connectErr == nil {
 			log.Infof("成功连接到主机：%s", wsUrl)
@@ -97,7 +96,7 @@ func (l *Live) Listen() error {
 		}
 		log.Warnf("连接主机失败：%s, 错误：%v", wsUrl, connectErr)
 	}
-	
+
 	if connectErr != nil {
 		return fmt.Errorf("所有主机连接失败，最后错误：%v", connectErr)
 	}
@@ -132,20 +131,20 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInitResp, danmuInfo *resource.Ge
 		return
 	}
 	l.UserInfo = &liverInfo.Data
-	
+
 	// 从cookie中获取用户ID
 	uid, err := resource.GetUserIDFromCookie(l.Client.CookiePath)
 	if err != nil {
 		log.Warnf("从cookie获取用户ID失败，使用默认值0: %v", err)
 		uid = 0
 	}
-	log.Debugf("使用用户ID: %d", uid)
-	
+	log.Infof("使用用户ID: %d", uid)
+
 	// 使用传入的弹幕信息，避免重复获取
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
-		UID:      uid,                    // 使用从cookie解析的用户ID
-		RoomID:   roomInfo.Data.RoomID,   // 真实房间ID
-		ProtoVer: 3,                      // 填3
+		UID:      uid,                  // 使用从cookie解析的用户ID
+		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
+		ProtoVer: 3,                    // 填3
 		Platform: "web",
 		Type:     2,
 		Key:      danmuInfo.Data.Token,

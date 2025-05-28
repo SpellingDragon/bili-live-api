@@ -17,9 +17,9 @@ const (
 )
 
 var heartbeatPayload = &dto.WSPayload{
-	ProtocolVersion: dto.Popularity, // 修改：从 dto.JSON (0) 改为 dto.Popularity (1)
-	Operation:       dto.Heartbeat,  // 保持不变：2
-	Body:            []byte("[object Object]"), // 修改：从 nil 改为 "[object Object]"
+	ProtocolVersion: dto.JSON,
+	Operation:       dto.Heartbeat,
+	Body:            []byte("{}"),
 }
 
 // Client websocket客户端实例
