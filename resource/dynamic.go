@@ -184,9 +184,9 @@ type Dynamic struct {
 	} `json:"data"`
 }
 
-func GetDynamic(uid int64) (*Dynamic, error) {
+func (a *API) GetDynamic(uid int64) (*Dynamic, error) {
 	result := &Dynamic{}
-	_, err := vcApiClient.R().
+	_, err := a.VcAPIClient.R().
 		SetQueryParam("host_uid", fmt.Sprintf("%d", uid)).
 		SetResult(result).
 		Get("/dynamic_svr/v1/dynamic_svr/space_history")

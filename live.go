@@ -16,18 +16,29 @@ import (
 
 // Live 使用 NewLive() 来初始化
 type Live struct {
-	Client     *websocket.Client
-	RoomID     int
-	LiverUname string
-	LastTitle  string
-	Face       string
+	Client       *websocket.Client
+	ResourceAPI  *resource.API
+	RoomID       int
+	RoomInfo     *resource.RoomInfo
+	UserInfo     *resource.UserInfo
+	FollowerInfo *resource.FollowerInfo
 }
 
 // NewLive 构造函数
 func NewLive(roomID int) *Live {
 	return &Live{
-		Client: websocket.New(),
-		RoomID: roomID,
+		Client:      websocket.New(resource.DefaultCookiePath),
+		ResourceAPI: resource.NewWithOptions(resource.DefaultCookiePath, false),
+		RoomID:      roomID,
+	}
+}
+
+// NewLiveWithPath 构造函数
+func NewLiveWithPath(roomID int, path string, debug bool) *Live {
+	return &Live{
+		Client:      websocket.New(path),
+		ResourceAPI: resource.NewWithOptions(path, debug),
+		RoomID:      roomID,
 	}
 }
 
@@ -57,7 +68,7 @@ func (l *Live) Stop() {
 }
 
 func (l *Live) Listen() error {
-	roomInfoResponse, err := resource.GetRoomInfo(l.RoomID)
+	roomInitInfo, err := l.ResourceAPI.RoomInit(l.RoomID)
 	if err != nil {
 		return fmt.Errorf("获取房间号失败：%v", err)
 	}
@@ -67,7 +78,7 @@ func (l *Live) Listen() error {
 	}
 
 	// TODO 发送进房包,可能有顺序问题
-	go l.enterRoom(roomInfoResponse)
+	go l.enterRoom(roomInitInfo)
 
 	if err := l.Client.Listening(); err != nil {
 		return fmt.Errorf("监听websocket失败：%v", err)
@@ -85,20 +96,29 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 }
 
 // 发送进入房间请求
-func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
+func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
-	liverInfo, _ := resource.UserInfo(roomInfo.Data.UID)
+	liverInfo, err := l.ResourceAPI.GetUserInfo(roomInfo.Data.UID)
 	liverInfoJson, _ := json.Marshal(liverInfo)
 	log.Infof("主播信息：%s", string(liverInfoJson))
-	l.setLiverProfile(liverInfo)
-	// 忽略错误
-	var err error
+	if err != nil {
+		log.Errorf("发送进入房间请求失败：%v", err)
+		return
+	}
+	l.UserInfo = &liverInfo.Data
+	getDanmu, err := l.ResourceAPI.GetDanmuInfo(roomInfo.Data.RoomID)
+	if err != nil {
+		log.Errorf("发送进入房间请求失败：%v", err)
+		return
+	}
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
+		UID:      602310692,
 		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
 		ProtoVer: 3,                    // 填3
 		Platform: "web",
 		Type:     2,
+		Key:      getDanmu.Data.Token,
 	})
 	if err = l.Client.Write(&dto.WSPayload{
 		ProtocolVersion: dto.JSON,
@@ -111,22 +131,48 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInfoResp) {
 }
 
 func (l *Live) RefreshRoom() error {
-	roomInfo, err := resource.GetRoomInfo(l.RoomID)
+	roomInfo, err := l.ResourceAPI.GetRoomInfo(l.RoomID)
 	if err != nil {
+		log.Errorf("刷新直播信息失败：%v", err)
 		return fmt.Errorf("刷新房间信息失败：%v", err)
 	}
-	liverInfo, _ := resource.UserInfo(roomInfo.Data.UID)
+	latestLiveTime := "0000-00-00 00:00:00"
+	if l.RoomInfo != nil {
+		latestLiveTime = l.RoomInfo.LiveTime
+	}
+	l.RoomInfo = &roomInfo.Data
+	if l.RoomInfo.LiveTime == "0000-00-00 00:00:00" {
+		l.RoomInfo.LiveTime = latestLiveTime
+	}
+	liverInfo, err := l.ResourceAPI.GetUserInfo(roomInfo.Data.UID)
 	if err != nil {
+		log.Errorf("刷新主播信息失败：%v", err)
 		return fmt.Errorf("刷新主播信息失败：%v", err)
 	}
-	liverInfoJson, _ := json.Marshal(liverInfo)
+	liverInfoJson, err := json.Marshal(liverInfo)
+	if err != nil {
+		log.Errorf("刷新主播信息失败：%v", err)
+		return fmt.Errorf("刷新主播信息失败：%v", err)
+	}
 	log.Infof("主播信息：%s", string(liverInfoJson))
-	l.setLiverProfile(liverInfo)
+	l.UserInfo = &liverInfo.Data
+	followerInfo, err := l.ResourceAPI.GetFollowerInfo(roomInfo.Data.UID)
+	if err != nil {
+		return fmt.Errorf("刷新主播粉丝数失败：%v", err)
+	}
+	l.FollowerInfo = &followerInfo.Data
 	return nil
 }
 
-func (l *Live) setLiverProfile(liverInfo *resource.UserInfoResp) {
-	l.LiverUname = liverInfo.Data.Name
-	l.LastTitle = liverInfo.Data.LiveRoom.Title
-	l.Face = liverInfo.Data.Face
+func (l *Live) GetStreamURL(qn int) string {
+	playURL, err := l.ResourceAPI.GetPlayURL(l.RoomID, qn)
+	if err != nil {
+		log.Errorf("获取直播推流链接失败：%v", err)
+		return ""
+	}
+	if len(playURL.Data.Durl) == 0 {
+		log.Errorf("获取直播推流链接失败：%v", playURL)
+		return ""
+	}
+	return strings.ReplaceAll(playURL.Data.Durl[0].Url, "\\u0026", "&")
 }
