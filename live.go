@@ -52,17 +52,14 @@ func (l *Live) Start() {
 			}
 			log.Warnf("连接失败, 重连中...:%v", err)
 			time.Sleep(10 * time.Second)
-			if err := l.Client.Connect(); err != nil {
-				log.Errorf("连接websocket失败：%v", err)
-				return
-			}
+			// 移除这里的硬编码连接，因为连接逻辑已经移到Listen方法中
 			continue
 		}
 		break
 	}
 }
 
-// Start 接收房间号，开始websocket心跳连接并阻塞
+// Stop 停止websocket连接
 func (l *Live) Stop() {
 	l.Client.Close()
 }
@@ -73,12 +70,40 @@ func (l *Live) Listen() error {
 		return fmt.Errorf("获取房间号失败：%v", err)
 	}
 
-	if err := l.Client.Connect(); err != nil {
-		return fmt.Errorf("连接websocket失败：%v", err)
+	// 获取弹幕服务器配置
+	getDanmu, err := l.ResourceAPI.GetDanmuInfo(roomInitInfo.Data.RoomID)
+	if err != nil {
+		return fmt.Errorf("获取弹幕服务器配置失败：%v", err)
+	}
+	
+	// 动态选择WebSocket服务器
+	hostList := getDanmu.Data.HostList
+	if len(hostList) == 0 {
+		return fmt.Errorf("没有可用的WebSocket服务器")
+	}
+	
+	// 尝试连接可用的主机（倒序尝试，与Python版本保持一致）
+	var wsUrl string
+	var connectErr error
+	for i := len(hostList) - 1; i >= 0; i-- {
+		host := hostList[i]
+		wsUrl = fmt.Sprintf("wss://%s:%d/sub", host.Host, host.WssPort)
+		log.Infof("正在尝试连接主机：%s", wsUrl)
+		
+		connectErr = l.Client.Connect(wsUrl)
+		if connectErr == nil {
+			log.Infof("成功连接到主机：%s", wsUrl)
+			break
+		}
+		log.Warnf("连接主机失败：%s, 错误：%v", wsUrl, connectErr)
+	}
+	
+	if connectErr != nil {
+		return fmt.Errorf("所有主机连接失败，最后错误：%v", connectErr)
 	}
 
-	// TODO 发送进房包,可能有顺序问题
-	go l.enterRoom(roomInitInfo)
+	// 发送进房包
+	go l.enterRoom(roomInitInfo, getDanmu)
 
 	if err := l.Client.Listening(); err != nil {
 		return fmt.Errorf("监听websocket失败：%v", err)
@@ -96,7 +121,7 @@ func (l *Live) RegisterHandlers(handlers ...interface{}) error {
 }
 
 // 发送进入房间请求
-func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
+func (l *Live) enterRoom(roomInfo *resource.RoomInitResp, danmuInfo *resource.GetDanmuInfoRsp) {
 	roomInfoJson, _ := json.Marshal(roomInfo)
 	log.Infof("进入房间：%s", string(roomInfoJson))
 	liverInfo, err := l.ResourceAPI.GetUserInfo(roomInfo.Data.UID)
@@ -107,18 +132,23 @@ func (l *Live) enterRoom(roomInfo *resource.RoomInitResp) {
 		return
 	}
 	l.UserInfo = &liverInfo.Data
-	getDanmu, err := l.ResourceAPI.GetDanmuInfo(roomInfo.Data.RoomID)
+	
+	// 从cookie中获取用户ID
+	uid, err := resource.GetUserIDFromCookie(l.Client.CookiePath)
 	if err != nil {
-		log.Errorf("发送进入房间请求失败：%v", err)
-		return
+		log.Warnf("从cookie获取用户ID失败，使用默认值0: %v", err)
+		uid = 0
 	}
+	log.Debugf("使用用户ID: %d", uid)
+	
+	// 使用传入的弹幕信息，避免重复获取
 	body, _ := jsoniter.Marshal(dto.WSEnterRoomBody{
-		UID:      602310692,
-		RoomID:   roomInfo.Data.RoomID, // 真实房间ID
-		ProtoVer: 3,                    // 填3
+		UID:      uid,                    // 使用从cookie解析的用户ID
+		RoomID:   roomInfo.Data.RoomID,   // 真实房间ID
+		ProtoVer: 3,                      // 填3
 		Platform: "web",
 		Type:     2,
-		Key:      getDanmu.Data.Token,
+		Key:      danmuInfo.Data.Token,
 	})
 	if err = l.Client.Write(&dto.WSPayload{
 		ProtocolVersion: dto.JSON,

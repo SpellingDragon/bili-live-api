@@ -43,7 +43,7 @@ func New(cookiePath string) *Client {
 }
 
 // Connect 连接到B站直播服务端
-func (client *Client) Connect() error {
+func (client *Client) Connect(wsUrl string) error {
 	cookie, _ := resource.GetCookie(client.CookiePath)
 	var bilibiliCommonHeaders = http.Header{
 		"Origin":     []string{"https://www.bilibili.com"},
@@ -53,7 +53,7 @@ func (client *Client) Connect() error {
 	}
 
 	var err error
-	client.conn, _, err = wss.DefaultDialer.Dial(resource.WSUrl, bilibiliCommonHeaders)
+	client.conn, _, err = wss.DefaultDialer.Dial(wsUrl, bilibiliCommonHeaders)
 	if err != nil {
 		log.Errorf("websocket connect error: %v", err)
 		return err
