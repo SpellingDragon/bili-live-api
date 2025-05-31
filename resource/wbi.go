@@ -23,6 +23,7 @@ func getMixinKey(orig string) string {
 	}
 	return s[:32]
 }
+
 func EncWbi(params map[string]interface{}, imgKey, subKey string) (int64, string) {
 	mixinKey := getMixinKey(imgKey + subKey)
 	currTime := time.Now().Unix()
@@ -50,6 +51,7 @@ func EncWbi(params map[string]interface{}, imgKey, subKey string) (int64, string
 	params["w_rid"] = wbiSign
 	return currTime, wbiSign
 }
+
 func GetWbiKeys(imgURL string, subURL string) (string, string, error) {
 	imgKey := strings.Split(imgURL[strings.LastIndex(imgURL, "/")+1:], ".")[0]
 	subKey := strings.Split(subURL[strings.LastIndex(subURL, "/")+1:], ".")[0]

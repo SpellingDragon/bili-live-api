@@ -159,10 +159,15 @@ type HostInfoResp struct {
 
 // RoomInit 获取直播间详细信息
 func (a *API) RoomInit(shortID int) (*RoomInitResp, error) {
+	wts, wrid := a.GetWRID(map[string]interface{}{
+		"id": shortID,
+	})
 	result := &RoomInitResp{}
 	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("id", strconv.Itoa(shortID)).
+		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
+		SetQueryParam("w_rid", wrid).
 		SetResult(result).
 		Get("/room/v1/Room/room_init")
 	if err != nil {
@@ -173,14 +178,22 @@ func (a *API) RoomInit(shortID int) (*RoomInitResp, error) {
 
 // GetDanmuInfo 获取弹幕数据
 func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
+	wts, wrid := a.GetWRID(map[string]interface{}{
+		"id":           shortID,
+		"type":         0,
+		"web_location": "444.8",
+	})
 	result := &GetDanmuInfoRsp{}
 	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("id", strconv.Itoa(shortID)).
 		SetQueryParam("type", "0").
 		SetQueryParam("web_location", "444.8").
+		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
+		SetQueryParam("w_rid", wrid).
 		SetResult(result).
 		Get("/xlive/web-room/v1/index/getDanmuInfo")
+	log.Infof("获取弹幕数据:%+v", result)
 	if err != nil {
 		return nil, err
 	}
@@ -189,10 +202,15 @@ func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 
 // GetRoomInfo 获取直播间详细信息
 func (a *API) GetRoomInfo(shortID int) (*RoomInfoResp, error) {
+	wts, wrid := a.GetWRID(map[string]interface{}{
+		"room_id": shortID,
+	})
 	result := &RoomInfoResp{}
 	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParam("room_id", strconv.Itoa(shortID)).
+		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
+		SetQueryParam("w_rid", wrid).
 		SetResult(result).
 		Get("/room/v1/Room/get_info")
 	if err != nil {
@@ -244,6 +262,12 @@ type QualityDescription struct {
 
 // GetPlayURL 获取直播推流URL
 func (a *API) GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
+	wts, wrid := a.GetWRID(map[string]interface{}{
+		"cid":      shortID,
+		"otype":    "json",
+		"platform": "web",
+		"qn":       qn,
+	})
 	result := &PlayURLRsp{}
 	rsp, err := a.LiveAPIClient.R().
 		EnableTrace().
@@ -251,6 +275,8 @@ func (a *API) GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
 		SetQueryParam("otype", "json").
 		SetQueryParam("platform", "web").
 		SetQueryParam("qn", strconv.Itoa(qn)).
+		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
+		SetQueryParam("w_rid", wrid).
 		SetResult(result).
 		Get("/room/v1/Room/playUrl")
 	if err != nil {

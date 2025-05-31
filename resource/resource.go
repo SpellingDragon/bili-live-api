@@ -1,6 +1,8 @@
 package resource
 
 import (
+	"sync"
+	"time"
 	"github.com/go-resty/resty/v2"
 )
 
@@ -25,11 +27,17 @@ type API struct {
 	LiveAPIClient   *resty.Client
 	CommonAPIClient *resty.Client
 	VcAPIClient     *resty.Client
+	// Nav缓存相关字段
+	navCache        *NavResp
+	navCacheTime    time.Time
+	navCacheTTL     time.Duration
+	navMutex        sync.RWMutex
 }
 
 func New() *API {
 	a := &API{}
 	a.CookiePath = "cookie.json"
+	a.navCacheTTL = 10 * time.Minute // 默认缓存10分钟
 	// 通用
 	a.LiveAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(LiveAPIURL)
 	// 用户信息
@@ -42,6 +50,7 @@ func New() *API {
 func NewWithOptions(path string, debug bool) *API {
 	a := &API{}
 	a.CookiePath = path
+	a.navCacheTTL = 10 * time.Minute // 默认缓存10分钟
 	// 通用
 	a.LiveAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(LiveAPIURL)
 	// 用户信息
