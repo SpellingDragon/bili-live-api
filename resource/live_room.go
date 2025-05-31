@@ -18,21 +18,21 @@ type GetDanmuInfoRsp struct {
 
 // GetRoomDanmuInfo
 type GetRoomDanmuInfo struct {
-	HostList         []HostList `yaml:"host_list"`
-	Group            string     `yaml:"group"`
-	BusinessId       int        `yaml:"business_id"`
-	RefreshRowFactor float64    `yaml:"refresh_row_factor"`
-	RefreshRate      int        `yaml:"refresh_rate"`
-	MaxDelay         int        `yaml:"max_delay"`
-	Token            string     `yaml:"token"`
+	HostList         []HostList `json:"host_list"`
+	Group            string     `json:"group"`
+	BusinessId       int        `json:"business_id"`
+	RefreshRowFactor float64    `json:"refresh_row_factor"`
+	RefreshRate      int        `json:"refresh_rate"`
+	MaxDelay         int        `json:"max_delay"`
+	Token            string     `json:"token"`
 }
 
 // HostList
 type HostList struct {
-	Host    string `yaml:"host"`
-	Port    int    `yaml:"port"`
-	WssPort int    `yaml:"wss_port"`
-	WsPort  int    `yaml:"ws_port"`
+	Host    string `json:"host"`
+	Port    int    `json:"port"`
+	WssPort int    `json:"wss_port"`
+	WsPort  int    `json:"ws_port"`
 }
 
 // RoomInitResp 直播进房信息
