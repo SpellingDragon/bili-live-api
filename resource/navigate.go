@@ -2,6 +2,8 @@ package resource
 
 import (
 	"time"
+
+	"github.com/spellingDragon/bili-live-api/log"
 )
 
 type NavResp struct {
@@ -57,7 +59,15 @@ func (a *API) Nav() (*NavResp, error) {
 		SetResult(navInfo).
 		Get("/x/web-interface/nav")
 	if err != nil {
-		return nil, err
+		log.Errorf("获取导航信息失败:%+v", err)
+		time.Sleep(time.Second)
+		_, err = a.CommonAPIClient.R().
+			SetResult(navInfo).
+			Get("/x/web-interface/nav")
+		if err != nil {
+			log.Errorf("重新获取导航信息失败，继续尝试使用缓存:%+v", err)
+			return a.navCache, nil
+		}
 	}
 
 	// 更新缓存
