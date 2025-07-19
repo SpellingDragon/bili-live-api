@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -121,13 +122,16 @@ type UserInfo struct {
 	IsSeniorMember int `json:"is_senior_member"`
 }
 
-func (a *API) GetUserInfo(uid int) (*UserInfoResp, error) {
+func (a *API) GetUserInfo(uid int64) (*UserInfoResp, error) {
+	accessID := a.GetUserDynamicRenderData(uid)
 	wts, wrid := a.GetWRID(map[string]interface{}{
-		"mid": uid,
+		"mid":     uid,
+		"w_webid": accessID,
 	})
 	userInfo := &UserInfoResp{}
 	_, err := a.CommonAPIClient.R().
-		SetQueryParam("mid", strconv.Itoa(uid)).
+		SetQueryParam("mid", fmt.Sprintf("%d", uid)).
+		SetQueryParam("w_webid", accessID).
 		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
 		SetQueryParam("w_rid", wrid).
 		SetResult(userInfo).
@@ -154,10 +158,10 @@ type FollowerInfo struct {
 	Follower  uint `json:"follower"`
 }
 
-func (a *API) GetFollowerInfo(uid int) (*FollowerInfoResp, error) {
+func (a *API) GetFollowerInfo(uid int64) (*FollowerInfoResp, error) {
 	userInfo := &FollowerInfoResp{}
 	_, err := a.CommonAPIClient.R().
-		SetQueryParam("vmid", strconv.Itoa(uid)).
+		SetQueryParam("vmid", fmt.Sprintf("%d", uid)).
 		SetResult(userInfo).
 		Get("/x/relation/stat")
 	if err != nil {

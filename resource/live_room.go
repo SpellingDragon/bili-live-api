@@ -46,7 +46,7 @@ type RoomInitResp struct {
 type RoomInitInfo struct {
 	RoomID      int   `json:"room_id"`
 	ShortID     int   `json:"short_id"`
-	UID         int   `json:"uid"`
+	UID         int64 `json:"uid"`
 	NeedP2P     int   `json:"need_p2p"`
 	IsHidden    bool  `json:"is_hidden"`
 	IsLocked    bool  `json:"is_locked"`
@@ -71,7 +71,7 @@ type RoomInfoResp struct {
 type RoomInfo struct {
 	RoomID               int         `json:"room_id"`
 	ShortID              int         `json:"short_id"`
-	UID                  int         `json:"uid"`
+	UID                  int64       `json:"uid"`
 	IsPortrait           bool        `json:"is_portrait"`
 	IsAnchor             int         `json:"is_anchor"`
 	PkId                 int         `json:"pk_id"`
