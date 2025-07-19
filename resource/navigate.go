@@ -141,6 +141,7 @@ func (a *API) GetUserDynamicRenderData(uid int64) string {
 		return ""
 	}
 
+	log.Debugf("获取用户动态页面响应: %s", resp.String())
 	if resp.StatusCode() != 200 {
 		log.Errorf("获取用户动态页面失败，状态码: %d", resp.StatusCode())
 		return ""
@@ -156,6 +157,7 @@ func (a *API) GetUserDynamicRenderData(uid int64) string {
 
 	// 解码URL编码的JSON数据
 	scriptRenderData, err := url.QueryUnescape(matches[1])
+	log.Debugf("解码后的渲染数据: %s", scriptRenderData)
 	if err != nil {
 		log.Errorf("URL解码失败: %+v", err)
 		return ""
