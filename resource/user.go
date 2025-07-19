@@ -136,7 +136,7 @@ func (a *API) GetUserInfo(uid int) (*UserInfoResp, error) {
 		return nil, err
 	}
 	if userInfo.Code < 0 {
-		return nil, errors.New("命中反爬策略")
+		return userInfo, errors.New("命中反爬策略")
 	}
 	return userInfo, nil
 }
