@@ -68,6 +68,10 @@ func NewWithOptions(path string, debug bool) *API {
 		SetDebug(debug).SetBaseURL(APIURL)
 	// 动态
 	a.VcAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(VcAPIURL)
+	// 空间
+	a.SpaceAPIClient = newClient(a.CookiePath).
+		SetHeader(RefererKey, RefererValue).
+		SetDebug(debug).SetBaseURL(SpaceURL)
 	return a
 }
 
