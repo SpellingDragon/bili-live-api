@@ -112,7 +112,8 @@ func (a *API) Nav() (*NavResp, error) {
 	return navInfo, nil
 }
 
-func (a *API) GetWRID(params map[string]interface{}) (int64, string) {
+func (a *API) GetWRID(params map[string]string) map[string]string {
+	params = EncWbi2(params)
 	navInfo, _ := a.Nav() // 现在会使用缓存
 	mainKey, subKey, _ := GetWbiKeys(navInfo.Data.WbiImg.ImgUrl, navInfo.Data.WbiImg.SubUrl)
 	return EncWbi(params, mainKey, subKey)

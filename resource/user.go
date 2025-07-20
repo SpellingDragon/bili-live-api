@@ -3,7 +3,6 @@ package resource
 import (
 	"errors"
 	"fmt"
-	"strconv"
 )
 
 type UserInfoResp struct {
@@ -124,16 +123,15 @@ type UserInfo struct {
 
 func (a *API) GetUserInfo(uid int64) (*UserInfoResp, error) {
 	accessID := a.GetUserDynamicRenderData(uid)
-	wts, wrid := a.GetWRID(map[string]interface{}{
-		"mid":     uid,
-		"w_webid": accessID,
+	params := a.GetWRID(map[string]string{
+		"mid":      fmt.Sprintf("%d", uid),
+		"token":    "",
+		"w_webid":  accessID,
+		"platform": "web",
 	})
 	userInfo := &UserInfoResp{}
 	_, err := a.CommonAPIClient.R().
-		SetQueryParam("mid", fmt.Sprintf("%d", uid)).
-		SetQueryParam("w_webid", accessID).
-		SetQueryParam("wts", strconv.FormatInt(wts, 10)).
-		SetQueryParam("w_rid", wrid).
+		SetQueryParams(params).
 		SetResult(userInfo).
 		Get("/x/space/wbi/acc/info")
 	if err != nil {
