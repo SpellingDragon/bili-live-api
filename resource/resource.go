@@ -3,6 +3,7 @@ package resource
 import (
 	"sync"
 	"time"
+
 	"github.com/go-resty/resty/v2"
 )
 
@@ -13,11 +14,14 @@ const (
 	LiveAPIURL = "https://api.live.bilibili.com"
 	// APIURL B站API地址
 	APIURL         = "https://api.bilibili.com"
+	SpaceURL       = "https://space.bilibili.com"
 	VcAPIURL       = "https://api.vc.bilibili.com"
 	UserAgentKey   = "User-Agent"
-	UserAgentValue = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0"
+	UserAgentValue = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0"
 	AcceptKey      = "Accept"
 	AcceptValue    = "application/json, text/plain, */*"
+	RefererKey     = "Referer"
+	RefererValue   = "https://www.bilibili.com"
 	CookieKey      = "Cookie"
 	CookieValue    = "buvid3=hi"
 )
@@ -26,12 +30,13 @@ type API struct {
 	CookiePath      string
 	LiveAPIClient   *resty.Client
 	CommonAPIClient *resty.Client
+	SpaceAPIClient  *resty.Client
 	VcAPIClient     *resty.Client
 	// Nav缓存相关字段
-	navCache        *NavResp
-	navCacheTime    time.Time
-	navCacheTTL     time.Duration
-	navMutex        sync.RWMutex
+	navCache     *NavResp
+	navCacheTime time.Time
+	navCacheTTL  time.Duration
+	navMutex     sync.RWMutex
 }
 
 func New() *API {
@@ -44,6 +49,8 @@ func New() *API {
 	a.CommonAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(APIURL)
 	// 动态
 	a.VcAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(VcAPIURL)
+	// 空间
+	a.SpaceAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(SpaceURL)
 	return a
 }
 
@@ -61,7 +68,9 @@ func NewWithOptions(path string, debug bool) *API {
 }
 
 func newClient(cookiePath string) *resty.Client {
-	return resty.New().SetHeader(UserAgentKey, UserAgentValue).
-		SetHeader(CookieKey, CookieValue).
+	return resty.New().
+		SetHeader(UserAgentKey, UserAgentValue).
+		SetHeader(AcceptKey, AcceptValue).
+		SetHeader(RefererKey, RefererValue).
 		SetCookies(ListHttpCookies(cookiePath))
 }

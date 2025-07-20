@@ -223,34 +223,34 @@ func (a *API) RealRoomID(shortID int) (int, error) {
 
 // PlayURLRsp
 type PlayURLRsp struct {
-	Code    int         ` json:"code" json:"code,omitempty"`
-	Message string      `json:"message" json:"message,omitempty"`
-	Ttl     int         `json:"ttl" json:"ttl,omitempty"`
-	Data    PlayURLData `json:"data" json:"data"`
+	Code    int         `json:"code,omitempty"`
+	Message string      `json:"message,omitempty"`
+	Ttl     int         `json:"ttl,omitempty"`
+	Data    PlayURLData `json:"data"`
 }
 
 // PlayURLData
 type PlayURLData struct {
-	CurrentQuality     int                  `json:"current_quality" json:"current_quality,omitempty"`
-	AcceptQuality      []string             `json:"accept_quality" json:"accept_quality,omitempty"`
-	CurrentQn          int                  `json:"current_qn" json:"current_qn,omitempty"`
-	QualityDescription []QualityDescription `json:"quality_description" json:"quality_description,omitempty"`
-	Durl               []Durl               `json:"durl" json:"durl,omitempty"`
+	CurrentQuality     int                  `json:"current_quality,omitempty"`
+	AcceptQuality      []string             `json:"accept_quality,omitempty"`
+	CurrentQn          int                  `json:"current_qn,omitempty"`
+	QualityDescription []QualityDescription `json:"quality_description,omitempty"`
+	Durl               []Durl               `json:"durl,omitempty"`
 }
 
 // Durl
 type Durl struct {
-	Order      int    `json:"order" json:"order,omitempty"`
-	StreamType int    `json:"stream_type" json:"stream_type,omitempty"`
-	P2pType    int    `json:"p2p_type" json:"p_2_p_type,omitempty"`
-	Url        string `json:"url" json:"url,omitempty"`
-	Length     int    `json:"length" json:"length,omitempty"`
+	Order      int    `json:"order,omitempty"`
+	StreamType int    `json:"stream_type,omitempty"`
+	P2pType    int    `json:"p2p_type,omitempty"`
+	Url        string `json:"url,omitempty"`
+	Length     int    `json:"length,omitempty"`
 }
 
 // QualityDescription
 type QualityDescription struct {
-	Qn   int    `json:"qn" json:"qn,omitempty"`
-	Desc string `json:"desc" json:"desc,omitempty"`
+	Qn   int    `json:"qn,omitempty"`
+	Desc string `json:"desc,omitempty"`
 }
 
 // GetPlayURL 获取直播推流URL

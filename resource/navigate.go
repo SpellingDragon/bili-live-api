@@ -133,10 +133,10 @@ func (a *API) GetUserDynamicRenderData(uid int64) string {
 	}
 
 	// 构建动态页面URL
-	dynamicURL := fmt.Sprintf("https://space.bilibili.com/%d/dynamic", uid)
+	dynamicURL := fmt.Sprintf("/%d/dynamic", uid)
 
 	// 发起HTTP请求
-	resp, err := a.CommonAPIClient.R().Get(dynamicURL)
+	resp, err := a.SpaceAPIClient.R().Get(dynamicURL)
 	if err != nil {
 		log.Errorf("获取用户动态页面失败: %+v", err)
 		return ""

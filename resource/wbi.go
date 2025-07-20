@@ -28,74 +28,44 @@ func getMixinKey(orig string) string {
 // EncWbi2 对请求参数进行增强，添加随机数和额外参数
 // 参考 Python 版本的 _enc_wbi2 函数和真实请求参数
 func EncWbi2(params map[string]string) map[string]string {
-	if _, webLocationExists := params["web_location"]; !webLocationExists {
-		params["web_location"] = "1550101"
-	}
-	// 生成更真实的 dm_img_str (模拟 WebGL 渲染器信息)
-	generateDmImgStr := func() string {
-		webglRenderers := []string{
-			"V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIENocm9taXVtKQ",
-			"V2ViR0wgMS4wIChPcGVuR0wgRVMgMy4wIENocm9taXVtKQ",
-			"V2ViR0wgMS4wIChPcGVuR0wgRVMgMi4wIEZpcmVmb3gpKQ",
-		}
-		return webglRenderers[rand.Intn(len(webglRenderers))]
-	}
+	// 定义随机字符集，与Python版本保持一致
+	dmRand := "ABCDEFGHIJK"
 
-	// 生成更真实的 dm_cover_img_str (模拟 ANGLE 渲染器信息)
-	generateDmCoverImgStr := func() string {
-		angleRenderers := []string{
-			"QU5HTEUgKEFwcGxlLCBBTkdMRSBNZXRhbCBSZW5kZXJlcjogQXBwbGUgTTMgUHJvLCBVbnNwZWNpZmllZCBWZXJzaW9uKUdvb2dsZSBJbmMuIChBcHBsZS",
-			"QU5HTEUgKEludGVsLCBBTkdMRSBEaXJlY3QzRCAxMSBWUyA1XzAgUFMgNV8wLCBEMTFfMSlHb29nbGUgSW5jLiAoSW50ZWwp",
-			"QU5HTEUgKE5WSURJQSwgQU5HTEUgRGlyZWN0M0QgMTEgVlMgNV8wIFBTIDVfMCwgRDExXzEpR29vZ2xlIEluYy4gKE5WSURJQS",
+	// 生成2位随机字符串的函数
+	generateRandomStr := func() string {
+		// 随机选择2个不重复的字符
+		indices := rand.Perm(len(dmRand))[:2]
+		result := make([]byte, 2)
+		for i, idx := range indices {
+			result[i] = dmRand[idx]
 		}
-		return angleRenderers[rand.Intn(len(angleRenderers))]
-	}
-
-	// 生成更真实的 dm_img_inter (模拟真实的屏幕和偏移参数)
-	generateDmImgInter := func() string {
-		// 常见的屏幕分辨率和偏移值
-		screenConfigs := []struct {
-			wh [3]int
-			of [3]int
-		}{
-			{wh: [3]int{3345, 1815, 105}, of: [3]int{230, 460, 230}},
-			{wh: [3]int{1920, 1080, 96}, of: [3]int{0, 0, 0}},
-			{wh: [3]int{2560, 1440, 110}, of: [3]int{100, 200, 100}},
-			{wh: [3]int{1366, 768, 96}, of: [3]int{50, 100, 50}},
-		}
-		config := screenConfigs[rand.Intn(len(screenConfigs))]
-		return fmt.Sprintf(`{"ds":[],"wh":[%d,%d,%d],"of":[%d,%d,%d]}`,
-			config.wh[0], config.wh[1], config.wh[2],
-			config.of[0], config.of[1], config.of[2])
+		return string(result)
 	}
 
 	// 添加增强参数
 	params["dm_img_list"] = "[]"
-	params["dm_img_str"] = generateDmImgStr()
-	params["dm_cover_img_str"] = generateDmCoverImgStr()
-	params["dm_img_inter"] = generateDmImgInter()
-
+	params["dm_img_str"] = generateRandomStr()
+	params["dm_cover_img_str"] = generateRandomStr()
+	params["dm_img_inter"] = `{"ds":[],"wh":[0,0,0],"of":[0,0,0]}`
 	return params
 }
 
 func EncWbi(params map[string]string, imgKey, subKey string) map[string]string {
+	// 重试时先把原有 w_rid 去除
+	delete(params, "w_rid")
 	mixinKey := getMixinKey(imgKey + subKey)
 	currTime := time.Now().Unix()
 	params["wts"] = fmt.Sprintf("%d", currTime) // 添加 wts 字段
+	// web_location 因为没被列入参数可能炸一些接口
+	if _, exists := params["web_location"]; !exists {
+		params["web_location"] = "1550101"
+	}
+	// 按照 key 重排参数并编码，与Python版本对齐
 	keys := make([]string, 0, len(params))
 	for k := range params {
 		keys = append(keys, k)
 	}
-	sort.Strings(keys) // 按照 key 重排参数
-	// 过滤 value 中的 "!'()*" 字符
-	for k, v := range params {
-		params[k] = strings.Map(func(r rune) rune {
-			if strings.IndexRune("!'()*", r) < 0 {
-				return r
-			}
-			return -1
-		}, fmt.Sprintf("%v", v))
-	}
+	sort.Strings(keys)
 	query := url.Values{}
 	for _, k := range keys {
 		query.Add(k, fmt.Sprintf("%v", params[k]))
