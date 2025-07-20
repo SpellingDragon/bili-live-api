@@ -51,8 +51,6 @@ func EncWbi2(params map[string]string) map[string]string {
 }
 
 func EncWbi(params map[string]string, imgKey, subKey string) map[string]string {
-	// 重试时先把原有 w_rid 去除
-	delete(params, "w_rid")
 	mixinKey := getMixinKey(imgKey + subKey)
 	currTime := time.Now().Unix()
 	params["wts"] = fmt.Sprintf("%d", currTime) // 添加 wts 字段

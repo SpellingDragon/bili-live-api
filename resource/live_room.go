@@ -160,7 +160,7 @@ type HostInfoResp struct {
 
 // RoomInit 获取直播间详细信息
 func (a *API) RoomInit(shortID int) (*RoomInitResp, error) {
-	params := a.GetWRID(map[string]string{
+	params := a.GetWRID(false, map[string]string{
 		"id": fmt.Sprintf("%d", shortID),
 	})
 	result := &RoomInitResp{}
@@ -177,7 +177,7 @@ func (a *API) RoomInit(shortID int) (*RoomInitResp, error) {
 
 // GetDanmuInfo 获取弹幕数据
 func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
-	params := a.GetWRID(map[string]string{
+	params := a.GetWRID(false, map[string]string{
 		"id":           fmt.Sprintf("%d", shortID),
 		"type":         "0",
 		"web_location": "444.8",
@@ -197,7 +197,7 @@ func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 
 // GetRoomInfo 获取直播间详细信息
 func (a *API) GetRoomInfo(shortID int) (*RoomInfoResp, error) {
-	params := a.GetWRID(map[string]string{
+	params := a.GetWRID(false, map[string]string{
 		"room_id": fmt.Sprintf("%d", shortID),
 	})
 	result := &RoomInfoResp{}
@@ -255,7 +255,7 @@ type QualityDescription struct {
 
 // GetPlayURL 获取直播推流URL
 func (a *API) GetPlayURL(shortID int, qn int) (*PlayURLRsp, error) {
-	params := a.GetWRID(map[string]string{
+	params := a.GetWRID(false, map[string]string{
 		"cid":      fmt.Sprintf("%d", shortID),
 		"otype":    "json",
 		"platform": "web",

@@ -59,9 +59,13 @@ func NewWithOptions(path string, debug bool) *API {
 	a.CookiePath = path
 	a.navCacheTTL = 10 * time.Minute // 默认缓存10分钟
 	// 通用
-	a.LiveAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(LiveAPIURL)
+	a.LiveAPIClient = newClient(a.CookiePath).
+		SetHeader(CookieKey, CookieValue).
+		SetDebug(debug).SetBaseURL(LiveAPIURL)
 	// 用户信息
-	a.CommonAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(APIURL)
+	a.CommonAPIClient = newClient(a.CookiePath).
+		SetHeader(RefererKey, RefererValue).
+		SetDebug(debug).SetBaseURL(APIURL)
 	// 动态
 	a.VcAPIClient = newClient(a.CookiePath).SetDebug(debug).SetBaseURL(VcAPIURL)
 	return a
@@ -71,6 +75,5 @@ func newClient(cookiePath string) *resty.Client {
 	return resty.New().
 		SetHeader(UserAgentKey, UserAgentValue).
 		SetHeader(AcceptKey, AcceptValue).
-		SetHeader(RefererKey, RefererValue).
 		SetCookies(ListHttpCookies(cookiePath))
 }

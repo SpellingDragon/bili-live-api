@@ -123,7 +123,7 @@ type UserInfo struct {
 
 func (a *API) GetUserInfo(uid int64) (*UserInfoResp, error) {
 	accessID := a.GetUserDynamicRenderData(uid)
-	params := a.GetWRID(map[string]string{
+	params := a.GetWRID(true, map[string]string{
 		"mid":     fmt.Sprintf("%d", uid),
 		"w_webid": accessID,
 	})
