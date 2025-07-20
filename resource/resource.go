@@ -44,13 +44,20 @@ func New() *API {
 	a.CookiePath = "cookie.json"
 	a.navCacheTTL = 10 * time.Minute // 默认缓存10分钟
 	// 通用
-	a.LiveAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(LiveAPIURL)
+	a.LiveAPIClient = newClient(a.CookiePath).
+		SetHeader(CookieKey, CookieValue).SetBaseURL(LiveAPIURL)
 	// 用户信息
-	a.CommonAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(APIURL)
+	a.CommonAPIClient = newClient(a.CookiePath).
+		SetHeader(RefererKey, RefererValue).
+		SetBaseURL(APIURL)
 	// 动态
-	a.VcAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(VcAPIURL)
+	a.VcAPIClient = newClient(a.CookiePath).
+		SetHeader(CookieKey, CookieValue).
+		SetBaseURL(VcAPIURL)
 	// 空间
-	a.SpaceAPIClient = newClient(a.CookiePath).SetDebug(false).SetBaseURL(SpaceURL)
+	a.SpaceAPIClient = newClient(a.CookiePath).
+		SetHeader(CookieKey, CookieValue).
+		SetBaseURL(SpaceURL)
 	return a
 }
 
