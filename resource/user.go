@@ -128,9 +128,9 @@ func (a *API) GetUserInfo(uid int64) (*UserInfoResp, error) {
 	reqUID, err := GetUserIDFromCookie(a.CookiePath)
 	if err != nil {
 		log.Warnf("从cookie获取用户ID失败，使用默认值0: %v", err)
-		uid = 0
+		reqUID = uid
 	}
-	log.Infof("使用用户ID: %d", uid)
+	log.Infof("使用用户ID: %d", reqUID)
 	accessID := a.GetUserDynamicRenderData(reqUID)
 	params := a.GetWRID(true, map[string]string{
 		"mid":     fmt.Sprintf("%d", uid),
