@@ -3,6 +3,8 @@ package resource
 import (
 	"errors"
 	"fmt"
+
+	"github.com/spellingDragon/bili-live-api/log"
 )
 
 type UserInfoResp struct {
@@ -122,13 +124,20 @@ type UserInfo struct {
 }
 
 func (a *API) GetUserInfo(uid int64) (*UserInfoResp, error) {
-	accessID := a.GetUserDynamicRenderData(uid)
+	// 从cookie中获取用户ID
+	reqUID, err := GetUserIDFromCookie(a.CookiePath)
+	if err != nil {
+		log.Warnf("从cookie获取用户ID失败，使用默认值0: %v", err)
+		uid = 0
+	}
+	log.Infof("使用用户ID: %d", uid)
+	accessID := a.GetUserDynamicRenderData(reqUID)
 	params := a.GetWRID(true, map[string]string{
 		"mid":     fmt.Sprintf("%d", uid),
 		"w_webid": accessID,
 	})
 	userInfo := &UserInfoResp{}
-	_, err := a.CommonAPIClient.R().
+	_, err = a.CommonAPIClient.R().
 		SetQueryParams(params).
 		SetResult(userInfo).
 		Get("/x/space/wbi/acc/info")
