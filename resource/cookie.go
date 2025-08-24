@@ -60,7 +60,7 @@ func GetCookieInfo(cookiePath string) *CookieInfo {
 			return nil
 		}
 		_ = jsoniter.Unmarshal(loginInfo, &cookieInfo)
-		cookieInfo.Code &= CopiedLoginInfoCode
+		cookieInfo.Code |= CopiedLoginInfoCode
 		cookieInfo.Message = "Copied"
 		loginInfo, err = jsoniter.Marshal(cookieInfo)
 		if err != nil {
@@ -85,14 +85,11 @@ func GetCookieInfo(cookiePath string) *CookieInfo {
 			// 计算7天前的时间戳
 			sevenDaysBeforeExpires := int64(7 * 24 * 60 * 60)
 			// 检查当前时间是否在expires前7天内
-			if cookie.Expires-currentTime >= sevenDaysBeforeExpires {
-				cookieInfo.Code &= NearlyExpiredLoginInfoCode
+			if cookie.Expires-currentTime <= sevenDaysBeforeExpires {
+				cookieInfo.Code |= NearlyExpiredLoginInfoCode
 				cookieInfo.Message = fmt.Sprintf("expired after %d second", cookie.Expires-currentTime)
-				loginInfo, err = jsoniter.Marshal(cookieInfo)
-				err = os.WriteFile(cookiePath, loginInfo, 0644)
-				if err != nil {
-					log.Printf("%s登录信息更新异常: info:%s error:%+v", cookiePath, loginInfo, err.Error())
-				}
+				// 仅提示并通过返回值让调用方处理，不再覆盖本地 cookie 文件
+				log.Printf("%s cookie 即将过期: %s", cookiePath, cookieInfo.Message)
 			}
 			break
 		}
