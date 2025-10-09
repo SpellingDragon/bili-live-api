@@ -182,7 +182,18 @@ func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
 		"type":         "0",
 		"web_location": "444.8",
 	})
-	result := &GetDanmuInfoRsp{}
+	result := &GetDanmuInfoRsp{
+		Data: GetRoomDanmuInfo{
+			HostList: []HostList{
+				{
+					Host:    "broadcastlv.chat.bilibili.com",
+					Port:    2243,
+					WssPort: 2245,
+					WsPort:  2244,
+				},
+			},
+		},
+	}
 	_, err := a.LiveAPIClient.R().
 		EnableTrace().
 		SetQueryParams(params).
