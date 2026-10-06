@@ -1,6 +1,9 @@
 package resource
 
 import (
+
+	"os"
+	"strings"
 	"sync"
 	"time"
 
@@ -29,6 +32,9 @@ const (
 type API struct {
 	CookiePath      string
 	buvid3          string
+	biliTicket      string
+	ticketAt        time.Time
+	cookie          string
 	LiveAPIClient   *resty.Client
 	CommonAPIClient *resty.Client
 	SpaceAPIClient  *resty.Client
@@ -67,6 +73,12 @@ func NewWithOptions(path string, debug bool) *API {
 	a := &API{}
 	a.CookiePath = path
 	a.navCacheTTL = 10 * time.Minute // 默认缓存10分钟
+	// v0.9.10: read cookie file content for ticket/buvid chain
+	if b, err := os.ReadFile(path); err == nil {
+		a.cookie = strings.TrimSpace(string(b))
+	}
+	buvid, _ := a.SeedBuvid()
+	_ = buvid
 	// 通用
 	a.LiveAPIClient = newClient(a.CookiePath).
 		SetHeader(CookieKey, CookieValue).
