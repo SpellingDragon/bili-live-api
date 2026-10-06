@@ -177,7 +177,8 @@ func (a *API) RoomInit(shortID int) (*RoomInitResp, error) {
 
 // GetDanmuInfo 获取弹幕数据
 func (a *API) GetDanmuInfo(shortID int) (*GetDanmuInfoRsp, error) {
-	params := a.GetWRID(false, map[string]string{
+	// v0.9.9: force wbi2-signed params — unsigned danmuinfo is risk-controlled (-352)
+	params := a.GetWRID(true, map[string]string{
 		"id":           fmt.Sprintf("%d", shortID),
 		"type":         "0",
 		"web_location": "444.8",
