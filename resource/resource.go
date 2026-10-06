@@ -23,11 +23,12 @@ const (
 	RefererKey     = "Referer"
 	RefererValue   = "https://www.bilibili.com"
 	CookieKey      = "Cookie"
-	CookieValue    = "buvid3=hi"
+	CookieValue    = "" // filled at runtime by BuvidCookieHeader() (was "buvid3=hi" — fake fingerprint, -352 root cause)
 )
 
 type API struct {
 	CookiePath      string
+	buvid3          string
 	LiveAPIClient   *resty.Client
 	CommonAPIClient *resty.Client
 	SpaceAPIClient  *resty.Client
@@ -44,8 +45,9 @@ func New() *API {
 	a.CookiePath = "cookie.json"
 	a.navCacheTTL = 10 * time.Minute // 默认缓存10分钟
 	// 通用
+	buvid, _ := a.SeedBuvid()
 	a.LiveAPIClient = newClient(a.CookiePath).
-		SetHeader(CookieKey, CookieValue).SetBaseURL(LiveAPIURL)
+		SetHeader(CookieKey, "buvid3="+buvid).SetBaseURL(LiveAPIURL)
 	// 用户信息
 	a.CommonAPIClient = newClient(a.CookiePath).
 		SetHeader(RefererKey, RefererValue).
